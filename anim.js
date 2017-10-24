@@ -15,7 +15,7 @@ window.onload = function () {
 
     var dots = [];
 
-    for (var i = 0; i < 100; i++) {
+    for (var i = 0; i < 200; i++) {
       dots.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -29,7 +29,9 @@ window.onload = function () {
     ctx.globalCompositeOperation = 'xor';
 
     function repaint() {
-      requestAnimationFrame(repaint);
+      setTimeout(function () {
+        requestAnimationFrame(repaint);
+      }, 1000 / 30);
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
