@@ -10,14 +10,16 @@ window.onload = function () {
       minRadius: 5,
       maxRadius: 12
     },
-    // gravity: {
-    //   enabled: true,
-    //   speed: 0.2,
-    //   maxRadius: 1,
-    //   minRadius: 0
-    // },
-    paths: [{
+    radial: {
       enabled: true,
+      perspective: 2,
+      speed: -0.1,
+      dotCount: 50,
+      minDistance: 0.5,
+      maxDistance: 0.95
+    },
+    paths: [{
+      enabled: false,
       speed: 0.2,
       horizPos: 0,
       vertPos: 0.3,
@@ -28,7 +30,7 @@ window.onload = function () {
       amplitudeJitter: 0.25,
       spacingJitter: 0.1
     }, {
-      enabled: true,
+      enabled: false,
       speed: -0.2,
       horizPos: 0.5,
       vertPos: 0.7,
@@ -53,7 +55,7 @@ window.onload = function () {
   };
 
   var pathDots = [];
-  var gravityDots = [];
+  var radialDots = null;
   var sparkles = [];
 
   function r() {
@@ -64,7 +66,7 @@ window.onload = function () {
     return config.dots.minRadius + (1 + dot.r) * (config.dots.maxRadius - config.dots.minRadius) / 2;
   }
 
-  function createDots(path) {
+  function createPathDots(path) {
     var x = 0;
 
     var dots = [];
@@ -85,6 +87,20 @@ window.onload = function () {
       dots.push(dot);
 
       x += radius * 2 + Math.random() * path.spacingJitter * path.spacingJitter * canvas.width;
+    }
+
+    return dots;
+  }
+
+  function createRadialDots() {
+    var dots = [];
+
+    for (var i = 0; i < config.radial.dotCount; i++) {
+      dots.push({
+        a: Math.random(), // angle
+        d: Math.random(), // distance from center
+        r: r()
+      });
     }
 
     return dots;
@@ -123,6 +139,37 @@ window.onload = function () {
         (canvas.width - logoW) / 2, (canvas.height - logoH) / 2, logoW, logoH
       );
 
+      if (config.radial.enabled) {
+        if (!radialDots) {
+          radialDots = createRadialDots();
+        }
+
+        for (var i = 0; i < radialDots.length; i++) {
+          var dot = radialDots[i];
+          var a = dot.a * Math.PI * 2;
+
+          var pos = ((t / 100 * Math.pow(config.radial.speed, 3) % 1) + 1) % 1;
+          var dotD = (pos + dot.d) % 1;
+          dotD = config.radial.minDistance + dotD * (config.radial.maxDistance - config.radial.minDistance);
+          var dotR = getRadius(dot);
+
+          if (config.radial.perspective) {
+            dotD = Math.pow(dotD, config.radial.perspective);
+            dotR *= dotD;
+          }
+
+          var dx = Math.cos(a) * dotD;
+          var dy = Math.sin(a) * dotD;
+
+          var x = (dx + 1) * canvas.width / 2;
+          var y = (dy + 1) * canvas.height / 2;
+
+          ctx.beginPath();
+          ctx.arc(x, y, dotR, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
       for (var i = 0; i < config.paths.length; i++) {
         var path = config.paths[i];
 
@@ -133,12 +180,12 @@ window.onload = function () {
         var dots = pathDots[i];
 
         if (!dots) {
-          dots = pathDots[i] = createDots(path);
+          dots = pathDots[i] = createPathDots(path);
         }
 
         var maxX = path.length * canvas.width;
 
-        var pos = ((t * Math.pow(path.speed, 3) % maxX) + maxX) % maxX;
+        var pos = ((t * Math.pow(path.speed, 3) % maxX) + maxX) % maxX; // @todo normalize to 1?
 
         for (var j = 0; j < dots.length; j++) {
           var dot = dots[j];
@@ -164,8 +211,12 @@ window.onload = function () {
     requestAnimationFrame(repaint);
   };
 
-  function deleteDots() {
+  function deleteAllPathDots() {
     pathDots = [];
+  }
+
+  function deleteRadialDots() {
+    radialDots = null;
   }
 
   var gui = new dat.GUI();
@@ -179,9 +230,18 @@ window.onload = function () {
   // sparklesFolder.add(config.sparkles, 'frequency');
 
   var dotsFolder = gui.addFolder('Dots');
-  dotsFolder.open();
-  dotsFolder.add(config.dots, 'minRadius', 0).onChange(deleteDots);
-  dotsFolder.add(config.dots, 'maxRadius', 0).onChange(deleteDots);
+  // dotsFolder.open();
+  dotsFolder.add(config.dots, 'minRadius', 0).onChange(deleteAllPathDots);
+  dotsFolder.add(config.dots, 'maxRadius', 0).onChange(deleteAllPathDots);
+
+  var radialFolder = gui.addFolder('Radial');
+  radialFolder.open();
+  radialFolder.add(config.radial, 'enabled');
+  radialFolder.add(config.radial, 'perspective', 0);
+  radialFolder.add(config.radial, 'speed', -1, 1);
+  radialFolder.add(config.radial, 'dotCount', 0).onChange(deleteRadialDots);
+  radialFolder.add(config.radial, 'minDistance', 0, 1);
+  radialFolder.add(config.radial, 'maxDistance', 0, 1);
 
   config.paths.forEach(function (path, idx) {
     function deleteDots() {
@@ -189,7 +249,11 @@ window.onload = function () {
     }
 
     var folder = gui.addFolder('Path ' + (idx + 1));
-    folder.open();
+
+    if (path.enabled) {
+      folder.open();
+    }
+
     folder.add(path, 'enabled');
     folder.add(path, 'speed', -1, 1);
     folder.add(path, 'horizPos', 0, 1);
