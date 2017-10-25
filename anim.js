@@ -36,7 +36,7 @@ window.onload = function () {
       minDistance: 0.5,
       maxDistance: 0.95
     },
-    paths: [{
+    waves: [{
       enabled: true,
       speed: 0.2,
       horizPos: 0,
@@ -72,7 +72,7 @@ window.onload = function () {
     }]
   };
 
-  var pathDots = [];
+  var waveDots = [];
   var radialDots = null;
   var sparkles = [];
 
@@ -84,12 +84,12 @@ window.onload = function () {
     return config.dots.minRadius + (1 + dot.r) * (config.dots.maxRadius - config.dots.minRadius) / 2;
   }
 
-  function createPathDots(path) {
+  function createWaveDots(wave) {
     var x = 0;
 
     var dots = [];
 
-    var maxX = path.length * canvas.width;
+    var maxX = wave.length * canvas.width;
 
     while (x < maxX) {
       var dot = {
@@ -104,7 +104,7 @@ window.onload = function () {
 
       dots.push(dot);
 
-      x += radius * 2 + Math.random() * path.spacingJitter * path.spacingJitter * canvas.width;
+      x += radius * 2 + Math.random() * wave.spacingJitter * wave.spacingJitter * canvas.width;
     }
 
     things += dots.length;
@@ -200,36 +200,36 @@ window.onload = function () {
         deleteRadialDots();
       }
 
-      for (var i = 0; i < config.paths.length; i++) {
-        var path = config.paths[i];
+      for (var i = 0; i < config.waves.length; i++) {
+        var wave = config.waves[i];
 
-        if (!path.enabled) {
-          deletePathDots(i);
+        if (!wave.enabled) {
+          deleteWaveDots(i);
           continue;
         }
 
-        var dots = pathDots[i];
+        var dots = waveDots[i];
 
         if (!dots) {
-          dots = pathDots[i] = createPathDots(path);
+          dots = waveDots[i] = createWaveDots(wave);
         }
 
-        var maxX = path.length * canvas.width;
+        var maxX = wave.length * canvas.width;
 
-        var pos = ((t * Math.pow(path.speed, 3) % maxX) + maxX) % maxX; // @todo normalize to 1?
+        var pos = ((t * Math.pow(wave.speed, 3) % maxX) + maxX) % maxX; // @todo normalize to 1?
 
         for (var j = 0; j < dots.length; j++) {
           var dot = dots[j];
 
           var dotX = (pos + dot.p * maxX) % maxX;
-          var x = path.horizPos * canvas.width + dotX;
+          var x = wave.horizPos * canvas.width + dotX;
           var y = (
             (
               Math.sin(
-                (dotX / maxX * path.period + path.phase) * Math.PI * 2
+                (dotX / maxX * wave.period + wave.phase) * Math.PI * 2
               )
-            ) * path.amplitude + dot.a * path.amplitudeJitter * path.amplitudeJitter
-            + path.vertPos
+            ) * wave.amplitude + dot.a * wave.amplitudeJitter * wave.amplitudeJitter
+            + wave.vertPos
           ) * canvas.height;
 
           ctx.beginPath();
@@ -295,17 +295,17 @@ window.onload = function () {
     requestAnimationFrame(repaint);
   };
 
-  function deletePathDots(idx) {
-    if (pathDots[idx]) {
-      things -= pathDots[idx].length;
+  function deleteWaveDots(idx) {
+    if (waveDots[idx]) {
+      things -= waveDots[idx].length;
     }
-    pathDots[idx] = null;
+    waveDots[idx] = null;
   }
 
-  function deleteAllPathDots() {
-    if (pathDots) {
-      for (var i = 0; i < pathDots.length; i++) {
-        deletePathDots(i);
+  function deleteAllWaveDots() {
+    if (waveDots) {
+      for (var i = 0; i < waveDots.length; i++) {
+        deleteWaveDots(i);
       }
     }
   }
@@ -343,8 +343,8 @@ window.onload = function () {
 
   var dotsFolder = gui.addFolder('Dots');
   // dotsFolder.open();
-  dotsFolder.add(config.dots, 'minRadius', 0).onChange(deleteAllPathDots);
-  dotsFolder.add(config.dots, 'maxRadius', 0).onChange(deleteAllPathDots);
+  dotsFolder.add(config.dots, 'minRadius', 0).onChange(deleteAllWaveDots);
+  dotsFolder.add(config.dots, 'maxRadius', 0).onChange(deleteAllWaveDots);
 
   var radialFolder = gui.addFolder('Radial');
   radialFolder.open();
@@ -355,26 +355,26 @@ window.onload = function () {
   radialFolder.add(config.radial, 'minDistance', 0, 1);
   radialFolder.add(config.radial, 'maxDistance', 0, 1);
 
-  config.paths.forEach(function (path, idx) {
+  config.waves.forEach(function (wave, idx) {
     function deleteDots() {
-      deletePathDots(idx);
+      deleteWaveDots(idx);
     }
 
-    var folder = gui.addFolder('Path ' + (idx + 1));
+    var folder = gui.addFolder('Wave ' + (idx + 1));
 
-    if (path.enabled) {
+    if (wave.enabled) {
       folder.open();
     }
 
-    folder.add(path, 'enabled');
-    folder.add(path, 'speed', -1, 1);
-    folder.add(path, 'horizPos', 0, 1);
-    folder.add(path, 'vertPos', 0, 1);
-    folder.add(path, 'length', 0, 1).onChange(deleteDots);
-    folder.add(path, 'phase', 0, 1);
-    folder.add(path, 'period', 0, 1);
-    folder.add(path, 'amplitude', 0, 1);
-    folder.add(path, 'amplitudeJitter', 0, 1);
-    folder.add(path, 'spacingJitter', 0, 1).onChange(deleteDots);
+    folder.add(wave, 'enabled');
+    folder.add(wave, 'speed', -1, 1);
+    folder.add(wave, 'horizPos', 0, 1);
+    folder.add(wave, 'vertPos', 0, 1);
+    folder.add(wave, 'length', 0, 1).onChange(deleteDots);
+    folder.add(wave, 'phase', 0, 1);
+    folder.add(wave, 'period', 0, 1);
+    folder.add(wave, 'amplitude', 0, 1);
+    folder.add(wave, 'amplitudeJitter', 0, 1);
+    folder.add(wave, 'spacingJitter', 0, 1).onChange(deleteDots);
   });
 };
