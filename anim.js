@@ -72,6 +72,15 @@ window.onload = function () {
     }]
   };
 
+  if (document.location.hash) {
+    try {
+      config = JSON.parse(document.location.hash.slice(1));
+    } catch (err) {
+      alert('Invalid config in hash, ignoring and using default config');
+      document.location.hash = '';
+    }
+  }
+
   var waveDots = [];
   var radialDots = null;
   var sparkles = [];
@@ -322,7 +331,19 @@ window.onload = function () {
     sparkles = [];
   }
 
+  var actions = {
+    default: function () {
+      document.location.hash = '';
+    },
+    share: function () {
+      document.location.hash = JSON.stringify(config);
+    }
+  };
+
   var gui = new dat.GUI();
+
+  gui.add(actions, 'default').name('Default');
+  gui.add(actions, 'share').name('Share');
 
   gui.add(config, 'fpsCap', 1, 60);
 
