@@ -1,5 +1,6 @@
 window.onload = function () {
   var config = {
+    fpsCap: 30,
     logo: {
       scale: 0.5
     },
@@ -133,7 +134,7 @@ window.onload = function () {
     function repaint(t) {
       setTimeout(function () {
         requestAnimationFrame(repaint);
-      }, 1000 / 30);
+      }, 1000 / config.fpsCap);
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -273,6 +274,8 @@ window.onload = function () {
   }
 
   var gui = new dat.GUI();
+
+  gui.add(config, 'fpsCap', 1);
 
   var logoFolder = gui.addFolder('Logo');
   logoFolder.open();
