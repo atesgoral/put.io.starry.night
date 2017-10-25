@@ -3,9 +3,16 @@ window.onload = function () {
     logo: {
       scale: 0.5
     },
-    // sparkles: {
-    //   frequency: 0.5
-    // },
+    sparkles: {
+      enabled: true,
+      frequency: 0.04,
+      age: 500,
+      width: 60,
+      height: 100,
+      thickness: 0.1,
+      minDistance: 0.2,
+      maxDistance: 0.95
+    },
     dots: {
       minRadius: 5,
       maxRadius: 12
@@ -19,7 +26,7 @@ window.onload = function () {
       maxDistance: 0.95
     },
     paths: [{
-      enabled: false,
+      enabled: true,
       speed: 0.2,
       horizPos: 0,
       vertPos: 0.3,
@@ -30,7 +37,7 @@ window.onload = function () {
       amplitudeJitter: 0.25,
       spacingJitter: 0.1
     }, {
-      enabled: false,
+      enabled: true,
       speed: -0.2,
       horizPos: 0.5,
       vertPos: 0.7,
@@ -206,6 +213,52 @@ window.onload = function () {
           ctx.fill();
         }
       }
+
+      if (config.sparkles.enabled) {
+        var halfW = config.sparkles.width / 2;
+        var halfH = config.sparkles.height / 2;
+        var aspectRatio = config.sparkles.width / config.sparkles.height;
+        var foldW = halfW * config.sparkles.thickness;
+        var foldH = halfH * config.sparkles.thickness * aspectRatio;
+
+        for (var i = sparkles.length; i--;) {
+          var sparkle = sparkles[i];
+          var age = t - sparkle.t;
+
+          if (age > config.sparkles.age) {
+            sparkles.splice(i, 1);
+            continue;
+          }
+
+          var scale = age / config.sparkles.age;
+          scale = 1 - Math.abs(0.5 - scale) * 2;
+
+          var x = (sparkle.x + 1) * canvas.width / 2;
+          var y = (sparkle.y + 1) * canvas.height / 2;
+
+          ctx.beginPath();
+          ctx.moveTo(x, y - halfH * scale);
+          ctx.lineTo(x + foldW * scale, y - foldH * scale);
+          ctx.lineTo(x + halfW * scale, y);
+          ctx.lineTo(x + foldW * scale, y + foldH * scale);
+          ctx.lineTo(x, y + halfH * scale);
+          ctx.lineTo(x - foldW * scale, y + foldH * scale);
+          ctx.lineTo(x - halfW * scale, y);
+          ctx.lineTo(x - foldW * scale, y - foldH * scale);
+          ctx.fill();
+        }
+
+        if (Math.random() < config.sparkles.frequency) {
+          var a = Math.random() * Math.PI * 2;
+          var d = config.sparkles.minDistance + Math.random() * (config.sparkles.maxDistance - config.sparkles.minDistance);
+
+          sparkles.push({
+            x: Math.cos(a) * d,
+            y: Math.sin(a) * d,
+            t: t
+          });
+        }
+      }
     }
 
     requestAnimationFrame(repaint);
@@ -225,9 +278,16 @@ window.onload = function () {
   logoFolder.open();
   logoFolder.add(config.logo, 'scale', 0, 1);
 
-  // var sparklesFolder = gui.addFolder('Sparkles');
-  // sparklesFolder.open();
-  // sparklesFolder.add(config.sparkles, 'frequency');
+  var sparklesFolder = gui.addFolder('Sparkles');
+  sparklesFolder.open();
+  sparklesFolder.add(config.sparkles, 'enabled');
+  sparklesFolder.add(config.sparkles, 'frequency', 0, 1);
+  sparklesFolder.add(config.sparkles, 'age', 0);
+  sparklesFolder.add(config.sparkles, 'width', 0);
+  sparklesFolder.add(config.sparkles, 'height', 0);
+  sparklesFolder.add(config.sparkles, 'thickness', 0, 1);
+  sparklesFolder.add(config.sparkles, 'minDistance', 0, 1);
+  sparklesFolder.add(config.sparkles, 'maxDistance', 0, 1);
 
   var dotsFolder = gui.addFolder('Dots');
   // dotsFolder.open();
