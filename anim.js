@@ -74,7 +74,7 @@ window.onload = function () {
 
   if (document.location.hash) {
     try {
-      config = JSON.parse(document.location.hash.slice(1));
+      config = JSON.parse(decodeURIComponent(document.location.hash.slice(1)));
     } catch (err) {
       alert('Invalid config in hash, ignoring and using default config');
       document.location.hash = '';
@@ -336,7 +336,7 @@ window.onload = function () {
       document.location.hash = '';
     },
     share: function () {
-      document.location.hash = JSON.stringify(config);
+      document.location.hash = encodeURIComponent(JSON.stringify(config));
     }
   };
 
