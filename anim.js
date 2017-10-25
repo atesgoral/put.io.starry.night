@@ -13,7 +13,7 @@ window.onload = function () {
       period: 1,
       amplitude: 0.15,
       amplitudeJitter: 0.25,
-      horizJitter: 0.1
+      spacingJitter: 0.1
     }, {
       enabled: true,
       speed: -0.2,
@@ -24,7 +24,7 @@ window.onload = function () {
       period: 1,
       amplitude: 0.15,
       amplitudeJitter: 0.25,
-      horizJitter: 0.1
+      spacingJitter: 0.1
     }, {
       enabled: false,
       speed: 0.27,
@@ -35,7 +35,7 @@ window.onload = function () {
       period: 0.5,
       amplitude: 0.34,
       amplitudeJitter: 0.31,
-      horizJitter: 0.12
+      spacingJitter: 0.12
     }]
   };
 
@@ -70,7 +70,7 @@ window.onload = function () {
 
       path.dots.push(dot);
 
-      x += radius * 2 + Math.random() * path.horizJitter * path.horizJitter * canvas.width;
+      x += radius * 2 + Math.random() * path.spacingJitter * path.spacingJitter * canvas.width;
     }
   }
 
@@ -164,6 +164,6 @@ window.onload = function () {
     folder.add(path, 'period', 0, 1);
     folder.add(path, 'amplitude', 0, 1);
     folder.add(path, 'amplitudeJitter', 0, 1);
-    folder.add(path, 'horizJitter', 0, 1).onChange(function () { path.dots = null; });
+    folder.add(path, 'spacingJitter', 0, 1).onChange(function () { path.dots = null; });
   });
 };
