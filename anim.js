@@ -1,4 +1,14 @@
 window.onload = function () {
+  var stats = new Stats();
+  var thingsPanel = stats.addPanel(new Stats.Panel('T', '#ff8', '#221'));
+  document.getElementById('stats').appendChild(stats.domElement);
+
+  var things = 0;
+
+  setInterval(function () {
+    thingsPanel.update(things, 1000);
+  }, 100);
+
   var config = {
     fpsCap: 30,
     logo: {
@@ -97,6 +107,8 @@ window.onload = function () {
       x += radius * 2 + Math.random() * path.spacingJitter * path.spacingJitter * canvas.width;
     }
 
+    things += dots.length;
+
     return dots;
   }
 
@@ -110,6 +122,8 @@ window.onload = function () {
         r: r()
       });
     }
+
+    things += dots.length;
 
     return dots;
   }
@@ -132,9 +146,15 @@ window.onload = function () {
     ctx.globalCompositeOperation = 'xor';
 
     function repaint(t) {
-      setTimeout(function () {
+      stats.begin();
+
+      if (config.fpsCap < 60) {
+        setTimeout(function () {
+          requestAnimationFrame(repaint);
+        }, 1000 / config.fpsCap);
+      } else {
         requestAnimationFrame(repaint);
-      }, 1000 / config.fpsCap);
+      }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -176,12 +196,15 @@ window.onload = function () {
           ctx.arc(x, y, dotR, 0, Math.PI * 2);
           ctx.fill();
         }
+      } else {
+        deleteRadialDots();
       }
 
       for (var i = 0; i < config.paths.length; i++) {
         var path = config.paths[i];
 
         if (!path.enabled) {
+          deletePathDots(i);
           continue;
         }
 
@@ -228,6 +251,7 @@ window.onload = function () {
 
           if (age > config.sparkles.age) {
             sparkles.splice(i, 1);
+            things--;
             continue;
           }
 
@@ -258,24 +282,49 @@ window.onload = function () {
             y: Math.sin(a) * d,
             t: t
           });
+
+          things++;
         }
+      } else {
+        deleteSparkles();
       }
+
+      stats.end();
     }
 
     requestAnimationFrame(repaint);
   };
 
+  function deletePathDots(idx) {
+    if (pathDots[idx]) {
+      things -= pathDots[idx].length;
+    }
+    pathDots[idx] = null;
+  }
+
   function deleteAllPathDots() {
-    pathDots = [];
+    if (pathDots) {
+      for (var i = 0; i < pathDots.length; i++) {
+        deletePathDots(i);
+      }
+    }
   }
 
   function deleteRadialDots() {
+    if (radialDots) {
+      things -= radialDots.length;
+    }
     radialDots = null;
+  }
+
+  function deleteSparkles() {
+    things -= sparkles.length;
+    sparkles = [];
   }
 
   var gui = new dat.GUI();
 
-  gui.add(config, 'fpsCap', 1);
+  gui.add(config, 'fpsCap', 1, 60);
 
   var logoFolder = gui.addFolder('Logo');
   logoFolder.open();
@@ -308,7 +357,7 @@ window.onload = function () {
 
   config.paths.forEach(function (path, idx) {
     function deleteDots() {
-      pathDots[idx] = null;
+      deletePathDots(idx);
     }
 
     var folder = gui.addFolder('Path ' + (idx + 1));

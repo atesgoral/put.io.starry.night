@@ -3,12 +3,18 @@
   <head>
     <meta charset="UTF-8">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.5/dat.gui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
     <script src="anim.js"></script>
     <style>
     body {
       margin: 0;
       padding: 0;
       background: #393939;
+    }
+    #stats {
+      position: absolute;
+      top: 0;
+      left: 0;
     }
     #container {
       margin: 40px auto;
@@ -21,6 +27,7 @@
     </style>
   </head>
   <body>
+    <div id="stats"></div>
     <div id="container">
         <canvas id="anim"></canvas>
     </div>
