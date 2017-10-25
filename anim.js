@@ -166,7 +166,7 @@ window.onload = function () {
     var logoAspectRatio = logo.width / logo.height;
 
     ctx.fillStyle = '#fff';
-    ctx.globalCompositeOperation = 'xor';
+    ctx.globalCompositeOperation = 'source-over';
 
     function repaint(t) {
       stats.begin();
@@ -180,15 +180,6 @@ window.onload = function () {
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      var logoW = logo.width * config.logo.scale;
-      var logoH = logoW / logoAspectRatio;
-
-      ctx.drawImage(
-        logo,
-        0, 0, logo.width, logo.height,
-        (canvas.width - logoW) / 2, (canvas.height - logoH) / 2, logoW, logoH
-      );
 
       if (config.radial.enabled) {
         if (!radialDots) {
@@ -260,6 +251,19 @@ window.onload = function () {
           ctx.fill();
         }
       }
+
+      var logoW = logo.width * config.logo.scale;
+      var logoH = logoW / logoAspectRatio;
+
+      ctx.globalCompositeOperation = 'xor';
+
+      ctx.drawImage(
+        logo,
+        0, 0, logo.width, logo.height,
+        (canvas.width - logoW) / 2, (canvas.height - logoH) / 2, logoW, logoH
+      );
+
+      ctx.globalCompositeOperation = 'source-over';
 
       if (config.sparkles.enabled) {
         var halfW = config.sparkles.width / 2;
