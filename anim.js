@@ -343,15 +343,15 @@ window.onload = function () {
 
   var dotsFolder = gui.addFolder('Dots');
   // dotsFolder.open();
-  dotsFolder.add(config.dots, 'minRadius', 0).onChange(deleteAllWaveDots);
-  dotsFolder.add(config.dots, 'maxRadius', 0).onChange(deleteAllWaveDots);
+  dotsFolder.add(config.dots, 'minRadius', 0).onFinishChange(deleteAllWaveDots);
+  dotsFolder.add(config.dots, 'maxRadius', 0).onFinishChange(deleteAllWaveDots);
 
   var radialFolder = gui.addFolder('Radial');
   radialFolder.open();
   radialFolder.add(config.radial, 'enabled');
   radialFolder.add(config.radial, 'perspective', 0);
   radialFolder.add(config.radial, 'speed', -1, 1);
-  radialFolder.add(config.radial, 'dotCount', 0).onChange(deleteRadialDots);
+  radialFolder.add(config.radial, 'dotCount', 0).onFinishChange(deleteRadialDots);
   radialFolder.add(config.radial, 'minDistance', 0, 1);
   radialFolder.add(config.radial, 'maxDistance', 0, 1);
 
@@ -370,11 +370,11 @@ window.onload = function () {
     folder.add(wave, 'speed', -1, 1);
     folder.add(wave, 'horizPos', 0, 1);
     folder.add(wave, 'vertPos', 0, 1);
-    folder.add(wave, 'length', 0, 1).onChange(deleteDots);
+    folder.add(wave, 'length', 0, 1).onFinishChange(deleteDots);
     folder.add(wave, 'phase', 0, 1);
     folder.add(wave, 'period', 0, 1);
     folder.add(wave, 'amplitude', 0, 1);
     folder.add(wave, 'amplitudeJitter', 0, 1);
-    folder.add(wave, 'spacingJitter', 0, 1).onChange(deleteDots);
+    folder.add(wave, 'spacingJitter', 0, 1).onFinishChange(deleteDots);
   });
 };
