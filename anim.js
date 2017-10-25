@@ -24,6 +24,13 @@ window.onload = function () {
       minDistance: 0.2,
       maxDistance: 0.95
     },
+    meteors: {
+      enabled: true,
+      frequency: 0.04,
+      speed: 0.1,
+      angle: 230,
+      age: 500
+    },
     dots: {
       minRadius: 5,
       maxRadius: 12
