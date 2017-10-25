@@ -9,7 +9,7 @@ window.onload = function () {
     thingsPanel.update(things, 1000);
   }, 100);
 
-  var config = {
+  var defaultConfig = {
     fpsCap: 30,
     logo: {
       scale: 0.5
@@ -78,6 +78,8 @@ window.onload = function () {
       spacingJitter: 0.12
     }]
   };
+
+  var config = defaultConfig;
 
   if (document.location.hash) {
     try {
@@ -340,6 +342,10 @@ window.onload = function () {
 
   var actions = {
     default: function () {
+      config = defaultConfig;
+      deleteAllWaveDots();
+      deleteRadialDots();
+      deleteSparkles();
       document.location.hash = '';
     },
     share: function () {
