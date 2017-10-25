@@ -10,7 +10,10 @@ window.onload = function () {
   }, 100);
 
   var defaultConfig = {
-    fpsCap: 30,
+    fps: {
+      throttle: true,
+      target: 30
+    },
     logo: {
       scale: 0.5
     },
@@ -26,10 +29,11 @@ window.onload = function () {
     },
     meteors: {
       enabled: true,
-      frequency: 0.04,
-      speed: 0.1,
-      angle: 230,
-      age: 500
+      frequency: 0.02,
+      angle: 0.44,
+      age: 500,
+      length: 0.75,
+      thickness: 14
     },
     dots: {
       minRadius: 5,
@@ -93,6 +97,7 @@ window.onload = function () {
   var waveDots = [];
   var radialDots = null;
   var sparkles = [];
+  var meteors = [];
 
   function r() {
     return Math.random() * 2 - 1;
@@ -166,10 +171,10 @@ window.onload = function () {
     function repaint(t) {
       stats.begin();
 
-      if (config.fpsCap < 60) {
+      if (config.fps.throttle) {
         setTimeout(function () {
           requestAnimationFrame(repaint);
-        }, 1000 / config.fpsCap);
+        }, 1000 / config.fps.target);
       } else {
         requestAnimationFrame(repaint);
       }
@@ -307,6 +312,46 @@ window.onload = function () {
         deleteSparkles();
       }
 
+      if (config.meteors.enabled) {
+        var r = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height) / 2;
+        var tailDuration = canvas.width / config.meteors.length;
+
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(config.meteors.angle * Math.PI * 2);
+
+        for (var i = meteors.length; i--;) {
+          var meteor = meteors[i];
+          var age = t - meteor.t;
+
+          if (age > config.meteors.age + tailDuration) {
+            meteors.splice(i, 1);
+            things--;
+            continue;
+          }
+
+          var x = (age / config.meteors.age - 0.5) * r * 2;
+          var y = (meteor.p - 0.5) * canvas.height;
+
+          ctx.beginPath();
+          ctx.arc(x, y, config.meteors.thickness / 2, Math.PI / 2, -Math.PI / 2, true);
+          ctx.lineTo(x - config.meteors.length * canvas.width, y);
+          ctx.fill();
+        }
+
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+        if (Math.random() < config.meteors.frequency) {
+          meteors.push({
+            p: Math.random(),
+            t: t
+          });
+
+          things++;
+        }
+      } else {
+        deleteMeteors();
+      }
+
       stats.end();
     }
 
@@ -340,12 +385,18 @@ window.onload = function () {
     sparkles = [];
   }
 
+  function deleteMeteors() {
+    things -= meteors.length;
+    meteors = [];
+  }
+
   var actions = {
     default: function () {
       config = defaultConfig;
       deleteAllWaveDots();
       deleteRadialDots();
       deleteSparkles();
+      deleteMeteors();
       document.location.hash = '';
     },
     share: function () {
@@ -358,7 +409,10 @@ window.onload = function () {
   gui.add(actions, 'default').name('Default');
   gui.add(actions, 'share').name('Share');
 
-  gui.add(config, 'fpsCap', 1, 60);
+  var fpsFolder = gui.addFolder('FPS');
+  fpsFolder.open();
+  fpsFolder.add(config.fps, 'throttle');
+  fpsFolder.add(config.fps, 'target', 1, 60);
 
   var logoFolder = gui.addFolder('Logo');
   logoFolder.open();
@@ -374,6 +428,15 @@ window.onload = function () {
   sparklesFolder.add(config.sparkles, 'thickness', 0, 1);
   sparklesFolder.add(config.sparkles, 'minDistance', 0, 1);
   sparklesFolder.add(config.sparkles, 'maxDistance', 0, 1);
+
+  var meteorsFolder = gui.addFolder('Meteors');
+  meteorsFolder.open();
+  meteorsFolder.add(config.meteors, 'enabled');
+  meteorsFolder.add(config.meteors, 'frequency', 0, 1);
+  meteorsFolder.add(config.meteors, 'angle', 0, 1);
+  meteorsFolder.add(config.meteors, 'age', 0);
+  meteorsFolder.add(config.meteors, 'length', 0);
+  meteorsFolder.add(config.meteors, 'thickness', 0);
 
   var dotsFolder = gui.addFolder('Dots');
   // dotsFolder.open();
