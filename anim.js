@@ -1,8 +1,21 @@
 window.onload = function () {
   var config = {
     logo: {
-      scale: 0.66
+      scale: 0.5
     },
+    // sparkles: {
+    //   frequency: 0.5
+    // },
+    dots: {
+      minRadius: 5,
+      maxRadius: 12
+    },
+    // gravity: {
+    //   enabled: true,
+    //   speed: 0.2,
+    //   maxRadius: 1,
+    //   minRadius: 0
+    // },
     paths: [{
       enabled: true,
       speed: 0.2,
@@ -39,21 +52,22 @@ window.onload = function () {
     }]
   };
 
-  var MIN_RADIUS = 5;
-  var MAX_RADIUS = 12;
+  var pathDots = [];
+  var gravityDots = [];
+  var sparkles = [];
 
   function r() {
     return Math.random() * 2 - 1;
   }
 
   function getRadius(dot) {
-    return MIN_RADIUS + (1 + dot.r) * (MAX_RADIUS - MIN_RADIUS) / 2;
+    return config.dots.minRadius + (1 + dot.r) * (config.dots.maxRadius - config.dots.minRadius) / 2;
   }
 
   function createDots(path) {
     var x = 0;
 
-    path.dots = [];
+    var dots = [];
 
     var maxX = path.length * canvas.width;
 
@@ -68,10 +82,12 @@ window.onload = function () {
 
       dot.p = dotX / maxX; // phase
 
-      path.dots.push(dot);
+      dots.push(dot);
 
       x += radius * 2 + Math.random() * path.spacingJitter * path.spacingJitter * canvas.width;
     }
+
+    return dots;
   }
 
   var SCALE = 2; // @todo not used yet
@@ -114,16 +130,18 @@ window.onload = function () {
           continue;
         }
 
-        if (!path.dots) {
-          createDots(path);
+        var dots = pathDots[i];
+
+        if (!dots) {
+          dots = pathDots[i] = createDots(path);
         }
 
         var maxX = path.length * canvas.width;
 
         var pos = ((t * Math.pow(path.speed, 3) % maxX) + maxX) % maxX;
 
-        for (var j = 0; j < path.dots.length; j++) {
-          var dot = path.dots[j];
+        for (var j = 0; j < dots.length; j++) {
+          var dot = dots[j];
 
           var dotX = (pos + dot.p * maxX) % maxX;
           var x = path.horizPos * canvas.width + dotX;
@@ -146,24 +164,41 @@ window.onload = function () {
     requestAnimationFrame(repaint);
   };
 
+  function deleteDots() {
+    pathDots = [];
+  }
+
   var gui = new dat.GUI();
 
   var logoFolder = gui.addFolder('Logo');
   logoFolder.open();
   logoFolder.add(config.logo, 'scale', 0, 1);
 
+  // var sparklesFolder = gui.addFolder('Sparkles');
+  // sparklesFolder.open();
+  // sparklesFolder.add(config.sparkles, 'frequency');
+
+  var dotsFolder = gui.addFolder('Dots');
+  dotsFolder.open();
+  dotsFolder.add(config.dots, 'minRadius', 0).onChange(deleteDots);
+  dotsFolder.add(config.dots, 'maxRadius', 0).onChange(deleteDots);
+
   config.paths.forEach(function (path, idx) {
+    function deleteDots() {
+      pathDots[idx] = null;
+    }
+
     var folder = gui.addFolder('Path ' + (idx + 1));
     folder.open();
     folder.add(path, 'enabled');
     folder.add(path, 'speed', -1, 1);
     folder.add(path, 'horizPos', 0, 1);
     folder.add(path, 'vertPos', 0, 1);
-    folder.add(path, 'length', 0, 1).onChange(function () { path.dots = null; });
+    folder.add(path, 'length', 0, 1).onChange(deleteDots);
     folder.add(path, 'phase', 0, 1);
     folder.add(path, 'period', 0, 1);
     folder.add(path, 'amplitude', 0, 1);
     folder.add(path, 'amplitudeJitter', 0, 1);
-    folder.add(path, 'spacingJitter', 0, 1).onChange(function () { path.dots = null; });
+    folder.add(path, 'spacingJitter', 0, 1).onChange(deleteDots);
   });
 };
