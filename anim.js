@@ -45,7 +45,8 @@ window.onload = function () {
       speed: -0.1,
       dotCount: 50,
       minDistance: 0.5,
-      maxDistance: 0.95
+      maxDistance: 0.95,
+      tapering: 0.2
     },
     waves: [{
       enabled: true,
@@ -195,7 +196,16 @@ window.onload = function () {
 
           var pos = ((t / 100 * Math.pow(config.radial.speed, 3) % 1) + 1) % 1;
           var dotD = (pos + dot.d) % 1;
+
+          var dotD2 = 1 - dotD;
+          var scale = dotD < config.radial.tapering
+            ? dotD / config.radial.tapering
+            : dotD2 < config.radial.tapering
+              ? dotD2 / config.radial.tapering
+              : 1;
+
           dotD = config.radial.minDistance + dotD * (config.radial.maxDistance - config.radial.minDistance);
+
           var dotR = getRadius(dot);
 
           if (config.radial.perspective) {
@@ -210,7 +220,7 @@ window.onload = function () {
           var y = (dy + 1) * canvas.height / 2;
 
           ctx.beginPath();
-          ctx.arc(x, y, dotR, 0, Math.PI * 2);
+          ctx.arc(x, y, dotR * scale, 0, Math.PI * 2);
           ctx.fill();
         }
       } else {
@@ -466,6 +476,7 @@ window.onload = function () {
   radialFolder.add(config.radial, 'dotCount', 0).onFinishChange(deleteRadialDots);
   radialFolder.add(config.radial, 'minDistance', 0, 1);
   radialFolder.add(config.radial, 'maxDistance', 0, 1);
+  radialFolder.add(config.radial, 'tapering', 0, 1);
 
   config.waves.forEach(function (wave, idx) {
     function deleteDots() {
