@@ -57,7 +57,8 @@ window.onload = function () {
       period: 1,
       amplitude: 0.15,
       amplitudeJitter: 0.25,
-      spacingJitter: 0.1
+      spacingJitter: 0.1,
+      tapering: 0.2
     }, {
       enabled: true,
       speed: -0.2,
@@ -68,7 +69,8 @@ window.onload = function () {
       period: 1,
       amplitude: 0.15,
       amplitudeJitter: 0.25,
-      spacingJitter: 0.1
+      spacingJitter: 0.1,
+      tapering: 0.2
     }, {
       enabled: false,
       speed: 0.27,
@@ -79,7 +81,8 @@ window.onload = function () {
       period: 0.5,
       amplitude: 0.34,
       amplitudeJitter: 0.31,
-      spacingJitter: 0.12
+      spacingJitter: 0.12,
+      tapering: 0.2
     }]
   };
 
@@ -236,18 +239,26 @@ window.onload = function () {
           var dot = dots[j];
 
           var dotX = (pos + dot.p * maxX) % maxX;
+          var dotP = dotX / maxX;
           var x = wave.horizPos * canvas.width + dotX;
           var y = (
             (
               Math.sin(
-                (dotX / maxX * wave.period + wave.phase) * Math.PI * 2
+                (dotP * wave.period + wave.phase) * Math.PI * 2
               )
             ) * wave.amplitude + dot.a * wave.amplitudeJitter * wave.amplitudeJitter
             + wave.vertPos
           ) * canvas.height;
 
+          var dotP2 = 1 - dotP;
+          var scale = dotP < wave.tapering
+            ? dotP / wave.tapering
+            : dotP2 < wave.tapering
+              ? dotP2 / wave.tapering
+              : 1;
+
           ctx.beginPath();
-          ctx.arc(x, y, getRadius(dot), 0, Math.PI * 2);
+          ctx.arc(x, y, getRadius(dot) * scale, 0, Math.PI * 2);
           ctx.fill();
         }
       }
@@ -477,5 +488,6 @@ window.onload = function () {
     folder.add(wave, 'amplitude', 0, 1);
     folder.add(wave, 'amplitudeJitter', 0, 1);
     folder.add(wave, 'spacingJitter', 0, 1).onFinishChange(deleteDots);
+    folder.add(wave, 'tapering', 0, 1);
   });
 };
