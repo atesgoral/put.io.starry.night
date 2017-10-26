@@ -9,6 +9,24 @@ window.onload = function () {
     thingsPanel.update(things, 1000);
   }, 100);
 
+  function encodeConfig(config) {
+    return JSON.stringify(config)
+      .replace(/"(\w+)":/g, '$1=')
+      .replace(/,/g, '&')
+      .replace(/{/g, '(')
+      .replace(/}/g, ')');
+  }
+
+  function decodeConfig(encoded) {
+    return JSON.parse(
+      encoded
+        .replace(/(\w+)=/g, '"$1":')
+        .replace(/\&/g, ',')
+        .replace(/\(/g, '{')
+        .replace(/\)/g, '}')
+    );
+  }
+
   var defaultConfig = {
     fps: {
       throttle: true,
@@ -91,7 +109,7 @@ window.onload = function () {
 
   if (document.location.hash) {
     try {
-      config = JSON.parse(decodeURIComponent(document.location.hash.slice(1)));
+      config = decodeConfig(document.location.hash.slice(1));
     } catch (err) {
       alert('Invalid config in hash, ignoring and using default config');
       document.location.hash = '';
@@ -425,7 +443,7 @@ window.onload = function () {
       document.location.hash = '';
     },
     share: function () {
-      document.location.hash = encodeURIComponent(JSON.stringify(config));
+      document.location.hash = encodeConfig(config);
     }
   };
 
