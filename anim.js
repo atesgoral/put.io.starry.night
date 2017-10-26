@@ -27,6 +27,18 @@ window.onload = function () {
     );
   }
 
+  function mixin(target, obj) {
+    for (var p in obj) {
+      var value = obj[p];
+
+      if (value instanceof Object) {
+        mixin(target[p], value);
+      } else {
+        target[p] = value;
+      }
+    }
+  }
+
   var defaultConfig = {
     fps: {
       throttle: true,
@@ -109,10 +121,15 @@ window.onload = function () {
 
   if (document.location.hash) {
     try {
-      config = decodeConfig(document.location.hash.slice(1));
+      mixin(config, decodeConfig(document.location.hash.slice(1)));
     } catch (err) {
-      alert('Invalid config in hash, ignoring and using default config');
-      document.location.hash = '';
+      try {
+        // Try legacy format
+        mixin(config, JSON.parse(decodeURIComponent(document.location.hash.slice(1))));
+      } catch (err) {
+        alert('Invalid config in hash, ignoring and using default config');
+        document.location.hash = '';
+      }
     }
   }
 
@@ -176,8 +193,16 @@ window.onload = function () {
   var SCALE = 2; // @todo not used yet
   var canvas = document.getElementById('anim');
 
-  canvas.width = canvas.offsetWidth * 2;
-  canvas.height = canvas.offsetHeight * 2;
+  function resizeCanvas() {
+    canvas.width = canvas.offsetWidth * 2;
+    canvas.height = canvas.offsetHeight * 2;
+  }
+
+  resizeCanvas();
+
+  window.onresize = function () {
+    resizeCanvas();
+  };
 
   var ctx = canvas.getContext('2d');
 
@@ -186,9 +211,6 @@ window.onload = function () {
 
   logo.onload = function () {
     var logoAspectRatio = logo.width / logo.height;
-
-    ctx.fillStyle = '#fff';
-    ctx.globalCompositeOperation = 'source-over';
 
     function repaint(t) {
       stats.begin();
@@ -202,6 +224,9 @@ window.onload = function () {
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#fff';
+      ctx.globalCompositeOperation = 'source-over';
 
       if (config.radial.enabled) {
         if (!radialDots) {
