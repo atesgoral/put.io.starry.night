@@ -193,15 +193,12 @@ window.onload = function () {
   var SCALE = 2; // @todo not used yet
   var canvas = document.getElementById('starry-night');
 
-  function resizeCanvas() {
-    canvas.width = canvas.offsetWidth * 2;
-    canvas.height = canvas.offsetHeight * 2;
-  }
+  var starryNight = new StarryNight(canvas, config);
 
-  resizeCanvas();
+  starryNight.resize();
 
   window.onresize = function () {
-    resizeCanvas();
+    starryNight.resize();
   };
 
   var ctx = canvas.getContext('2d');
