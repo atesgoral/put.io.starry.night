@@ -146,12 +146,12 @@ window.onload = function () {
     return config.dots.minRadius + (1 + dot.r) * (config.dots.maxRadius - config.dots.minRadius) / 2;
   }
 
-  function createWaveDots(wave) {
+  function createWaveDots(waveConfig) {
     var x = 0;
 
     var dots = [];
 
-    var maxX = wave.length * canvas.width;
+    var maxX = waveConfig.length * canvas.width;
 
     while (x < maxX) {
       var dot = {
@@ -166,7 +166,7 @@ window.onload = function () {
 
       dots.push(dot);
 
-      x += radius * 2 + Math.random() * wave.spacingJitter * wave.spacingJitter * canvas.width;
+      x += radius * 2 + Math.random() * waveConfig.spacingJitter * waveConfig.spacingJitter * canvas.width;
     }
 
     things += dots.length;
@@ -264,42 +264,42 @@ window.onload = function () {
       }
 
       for (var i = 0; i < config.waves.length; i++) {
-        var wave = config.waves[i];
+        var waveConfig = config.waves[i];
 
-        if (!wave.enabled) {
+        if (!waveConfig.enabled) {
           continue;
         }
 
         var dots = waveDots[i];
 
         if (!dots) {
-          dots = waveDots[i] = createWaveDots(wave);
+          dots = waveDots[i] = createWaveDots(waveConfig);
         }
 
-        var maxX = wave.length * canvas.width;
+        var maxX = waveConfig.length * canvas.width;
 
-        var pos = ((t * Math.pow(wave.speed, 3) % maxX) + maxX) % maxX; // @todo normalize to 1?
+        var pos = ((t * Math.pow(waveConfig.speed, 3) % maxX) + maxX) % maxX; // @todo normalize to 1?
 
         for (var j = 0; j < dots.length; j++) {
           var dot = dots[j];
 
           var dotX = (pos + dot.p * maxX) % maxX;
           var dotP = dotX / maxX;
-          var x = wave.horizPos * canvas.width + dotX;
+          var x = waveConfig.horizPos * canvas.width + dotX;
           var y = (
             (
               Math.sin(
-                (dotP * wave.period + wave.phase) * Math.PI * 2
+                (dotP * waveConfig.period + waveConfig.phase) * Math.PI * 2
               )
-            ) * wave.amplitude + dot.a * wave.amplitudeJitter * wave.amplitudeJitter
-            + wave.vertPos
+            ) * waveConfig.amplitude + dot.a * waveConfig.amplitudeJitter * waveConfig.amplitudeJitter
+            + waveConfig.vertPos
           ) * canvas.height;
 
           var dotP2 = 1 - dotP;
-          var scale = dotP < wave.tapering
-            ? dotP / wave.tapering
-            : dotP2 < wave.tapering
-              ? dotP2 / wave.tapering
+          var scale = dotP < waveConfig.tapering
+            ? dotP / waveConfig.tapering
+            : dotP2 < waveConfig.tapering
+              ? dotP2 / waveConfig.tapering
               : 1;
 
           ctx.beginPath();
