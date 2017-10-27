@@ -133,11 +133,6 @@ window.onload = function () {
     }
   }
 
-  var waveDots = [];
-  var radialDots = null;
-  var sparkles = [];
-  var meteors = [];
-
   function r() {
     return Math.random() * 2 - 1;
   }
@@ -174,6 +169,18 @@ window.onload = function () {
     return dots;
   }
 
+  function createAllWaveDots() {
+    var waveDots = [];
+
+    for (var i = 0; i < config.waves.length; i++) {
+      waveDots[i] = config.waves[i].enabled
+        ? createWaveDots(config.waves[i])
+        : [];
+    }
+
+    return waveDots;
+  }
+
   function createRadialDots() {
     var dots = [];
 
@@ -199,6 +206,11 @@ window.onload = function () {
 
   window.onresize = starryNight.resize;
 
+  var waveDots = createAllWaveDots();
+  var radialDots = createRadialDots();
+  var sparkles = [];
+  var meteors = [];
+
   var ctx = canvas.getContext('2d');
 
   var logo = new Image();
@@ -223,58 +235,44 @@ window.onload = function () {
       ctx.fillStyle = '#fff';
       ctx.globalCompositeOperation = 'source-over';
 
-      if (config.radial.enabled) {
-        if (!radialDots) {
-          radialDots = createRadialDots();
+      for (var i = 0; i < radialDots.length; i++) {
+        var dot = radialDots[i];
+        var a = dot.a * Math.PI * 2;
+
+        var pos = ((t / 100 * Math.pow(config.radial.speed, 3) % 1) + 1) % 1;
+        var dotD = (pos + dot.d) % 1;
+
+        var dotD2 = 1 - dotD;
+        var scale = dotD < config.radial.tapering
+          ? dotD / config.radial.tapering
+          : dotD2 < config.radial.tapering
+            ? dotD2 / config.radial.tapering
+            : 1;
+
+        dotD = config.radial.minDistance + dotD * (config.radial.maxDistance - config.radial.minDistance);
+
+        var dotR = getRadius(dot);
+
+        if (config.radial.perspective) {
+          dotD = Math.pow(dotD, config.radial.perspective);
+          dotR *= dotD;
         }
 
-        for (var i = 0; i < radialDots.length; i++) {
-          var dot = radialDots[i];
-          var a = dot.a * Math.PI * 2;
+        var dx = Math.cos(a) * dotD;
+        var dy = Math.sin(a) * dotD;
 
-          var pos = ((t / 100 * Math.pow(config.radial.speed, 3) % 1) + 1) % 1;
-          var dotD = (pos + dot.d) % 1;
+        var x = (dx + 1) * canvas.width / 2;
+        var y = (dy + 1) * canvas.height / 2;
 
-          var dotD2 = 1 - dotD;
-          var scale = dotD < config.radial.tapering
-            ? dotD / config.radial.tapering
-            : dotD2 < config.radial.tapering
-              ? dotD2 / config.radial.tapering
-              : 1;
-
-          dotD = config.radial.minDistance + dotD * (config.radial.maxDistance - config.radial.minDistance);
-
-          var dotR = getRadius(dot);
-
-          if (config.radial.perspective) {
-            dotD = Math.pow(dotD, config.radial.perspective);
-            dotR *= dotD;
-          }
-
-          var dx = Math.cos(a) * dotD;
-          var dy = Math.sin(a) * dotD;
-
-          var x = (dx + 1) * canvas.width / 2;
-          var y = (dy + 1) * canvas.height / 2;
-
-          ctx.beginPath();
-          ctx.arc(x, y, dotR * scale, 0, Math.PI * 2);
-          ctx.fill();
-        }
+        ctx.beginPath();
+        ctx.arc(x, y, dotR * scale, 0, Math.PI * 2);
+        ctx.fill();
       }
 
       for (var i = 0; i < config.waves.length; i++) {
         var waveConfig = config.waves[i];
 
-        if (!waveConfig.enabled) {
-          continue;
-        }
-
         var dots = waveDots[i];
-
-        if (!dots) {
-          dots = waveDots[i] = createWaveDots(waveConfig);
-        }
 
         var maxX = waveConfig.length * canvas.width;
 
@@ -321,91 +319,87 @@ window.onload = function () {
 
       ctx.globalCompositeOperation = 'source-over';
 
-      if (config.sparkles.enabled) {
-        var halfW = config.sparkles.width / 2;
-        var halfH = config.sparkles.height / 2;
-        var aspectRatio = config.sparkles.width / config.sparkles.height;
-        var foldW = halfW * config.sparkles.thickness;
-        var foldH = halfH * config.sparkles.thickness * aspectRatio;
+      var halfW = config.sparkles.width / 2;
+      var halfH = config.sparkles.height / 2;
+      var aspectRatio = config.sparkles.width / config.sparkles.height;
+      var foldW = halfW * config.sparkles.thickness;
+      var foldH = halfH * config.sparkles.thickness * aspectRatio;
 
-        for (var i = sparkles.length; i--;) {
-          var sparkle = sparkles[i];
-          var age = t - sparkle.t;
+      for (var i = sparkles.length; i--;) {
+        var sparkle = sparkles[i];
+        var age = t - sparkle.t;
 
-          if (age > config.sparkles.age) {
-            sparkles.splice(i, 1);
-            things--;
-            continue;
-          }
-
-          var scale = age / config.sparkles.age;
-          scale = 1 - Math.abs(0.5 - scale) * 2;
-
-          var x = (sparkle.x + 1) * canvas.width / 2;
-          var y = (sparkle.y + 1) * canvas.height / 2;
-
-          ctx.beginPath();
-          ctx.moveTo(x, y - halfH * scale);
-          ctx.lineTo(x + foldW * scale, y - foldH * scale);
-          ctx.lineTo(x + halfW * scale, y);
-          ctx.lineTo(x + foldW * scale, y + foldH * scale);
-          ctx.lineTo(x, y + halfH * scale);
-          ctx.lineTo(x - foldW * scale, y + foldH * scale);
-          ctx.lineTo(x - halfW * scale, y);
-          ctx.lineTo(x - foldW * scale, y - foldH * scale);
-          ctx.fill();
+        if (age > config.sparkles.age) {
+          sparkles.splice(i, 1);
+          things--;
+          continue;
         }
 
-        if (Math.random() < config.sparkles.frequency) {
-          var a = Math.random() * Math.PI * 2;
-          var d = config.sparkles.minDistance + Math.random() * (config.sparkles.maxDistance - config.sparkles.minDistance);
+        var scale = age / config.sparkles.age;
+        scale = 1 - Math.abs(0.5 - scale) * 2;
 
-          sparkles.push({
-            x: Math.cos(a) * d,
-            y: Math.sin(a) * d,
-            t: t
-          });
+        var x = (sparkle.x + 1) * canvas.width / 2;
+        var y = (sparkle.y + 1) * canvas.height / 2;
 
-          things++;
-        }
+        ctx.beginPath();
+        ctx.moveTo(x, y - halfH * scale);
+        ctx.lineTo(x + foldW * scale, y - foldH * scale);
+        ctx.lineTo(x + halfW * scale, y);
+        ctx.lineTo(x + foldW * scale, y + foldH * scale);
+        ctx.lineTo(x, y + halfH * scale);
+        ctx.lineTo(x - foldW * scale, y + foldH * scale);
+        ctx.lineTo(x - halfW * scale, y);
+        ctx.lineTo(x - foldW * scale, y - foldH * scale);
+        ctx.fill();
       }
 
-      if (config.meteors.enabled) {
-        var r = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height) / 2;
-        var tailDuration = canvas.width / config.meteors.length;
+      var r = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height) / 2;
+      var tailDuration = canvas.width / config.meteors.length;
 
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate(config.meteors.angle * Math.PI * 2);
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(config.meteors.angle * Math.PI * 2);
 
-        for (var i = meteors.length; i--;) {
-          var meteor = meteors[i];
-          var age = t - meteor.t;
+      for (var i = meteors.length; i--;) {
+        var meteor = meteors[i];
+        var age = t - meteor.t;
 
-          if (age > config.meteors.age + tailDuration) {
-            meteors.splice(i, 1);
-            things--;
-            continue;
-          }
-
-          var x = (age / config.meteors.age - 0.5) * r * 2;
-          var y = (meteor.p - 0.5) * canvas.height;
-
-          ctx.beginPath();
-          ctx.arc(x, y, config.meteors.thickness / 2, Math.PI / 2, -Math.PI / 2, true);
-          ctx.lineTo(x - config.meteors.length * canvas.width, y);
-          ctx.fill();
+        if (age > config.meteors.age + tailDuration) {
+          meteors.splice(i, 1);
+          things--;
+          continue;
         }
 
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        var x = (age / config.meteors.age - 0.5) * r * 2;
+        var y = (meteor.p - 0.5) * canvas.height;
 
-        if (Math.random() < config.meteors.frequency) {
-          meteors.push({
-            p: Math.random(),
-            t: t
-          });
+        ctx.beginPath();
+        ctx.arc(x, y, config.meteors.thickness / 2, Math.PI / 2, -Math.PI / 2, true);
+        ctx.lineTo(x - config.meteors.length * canvas.width, y);
+        ctx.fill();
+      }
 
-          things++;
-        }
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+      if (config.meteors.enabled && Math.random() < config.meteors.frequency) {
+        meteors.push({
+          p: Math.random(),
+          t: t
+        });
+
+        things++;
+      }
+
+      if (config.sparkles.enabled && Math.random() < config.sparkles.frequency) {
+        var a = Math.random() * Math.PI * 2;
+        var d = config.sparkles.minDistance + Math.random() * (config.sparkles.maxDistance - config.sparkles.minDistance);
+
+        sparkles.push({
+          x: Math.cos(a) * d,
+          y: Math.sin(a) * d,
+          t: t
+        });
+
+        things++;
       }
 
       stats.end();
@@ -418,7 +412,7 @@ window.onload = function () {
     if (waveDots[idx]) {
       things -= waveDots[idx].length;
     }
-    waveDots[idx] = null;
+    waveDots[idx] = [];
   }
 
   function deleteAllWaveDots() {
@@ -433,7 +427,7 @@ window.onload = function () {
     if (radialDots) {
       things -= radialDots.length;
     }
-    radialDots = null;
+    radialDots = [];
   }
 
   function deleteSparkles() {
@@ -448,11 +442,13 @@ window.onload = function () {
 
   var actions = {
     default: function () {
-      config = defaultConfig;
       deleteAllWaveDots();
       deleteRadialDots();
       deleteSparkles();
       deleteMeteors();
+      config = defaultConfig;
+      waveDots = createAllWaveDots();
+      radialDots = createRadialDots();
       document.location.hash = '';
     },
     share: function () {
@@ -476,7 +472,11 @@ window.onload = function () {
 
   var sparklesFolder = gui.addFolder('Sparkles');
   sparklesFolder.open();
-  sparklesFolder.add(config.sparkles, 'enabled').onFinishChange(function (enabled) { !enabled && deleteSparkles(); });
+  sparklesFolder.add(config.sparkles, 'enabled').onFinishChange(function (enabled) {
+    if (!enabled) {
+      deleteSparkles();
+    }
+  });
   sparklesFolder.add(config.sparkles, 'frequency', 0, 1);
   sparklesFolder.add(config.sparkles, 'age', 0);
   sparklesFolder.add(config.sparkles, 'width', 0);
@@ -487,7 +487,11 @@ window.onload = function () {
 
   var meteorsFolder = gui.addFolder('Meteors');
   meteorsFolder.open();
-  meteorsFolder.add(config.meteors, 'enabled').onFinishChange(function (enabled) { !enabled && deleteMeteors(); });
+  meteorsFolder.add(config.meteors, 'enabled').onFinishChange(function (enabled) {
+    if (!enabled) {
+      deleteMeteors();
+    }
+  });
   meteorsFolder.add(config.meteors, 'frequency', 0, 1);
   meteorsFolder.add(config.meteors, 'angle', 0, 1);
   meteorsFolder.add(config.meteors, 'age', 0);
@@ -496,12 +500,24 @@ window.onload = function () {
 
   var dotsFolder = gui.addFolder('Dots');
   // dotsFolder.open();
-  dotsFolder.add(config.dots, 'minRadius', 0).onFinishChange(deleteAllWaveDots);
-  dotsFolder.add(config.dots, 'maxRadius', 0).onFinishChange(deleteAllWaveDots);
+  dotsFolder.add(config.dots, 'minRadius', 0).onFinishChange(function () {
+    deleteAllWaveDots();
+    waveDots = createAllWaveDots();
+  });
+  dotsFolder.add(config.dots, 'maxRadius', 0).onFinishChange(function () {
+    deleteAllWaveDots();
+    waveDots = createAllWaveDots();
+  });
 
   var radialFolder = gui.addFolder('Radial');
   radialFolder.open();
-  radialFolder.add(config.radial, 'enabled').onFinishChange(function (enabled) { !enabled && deleteRadialDots(); });
+  radialFolder.add(config.radial, 'enabled').onFinishChange(function (enabled) {
+    if (enabled) {
+      radialDots = createRadialDots();
+    } else {
+      deleteRadialDots();
+    }
+  });
   radialFolder.add(config.radial, 'perspective', 0);
   radialFolder.add(config.radial, 'speed', -1, 1);
   radialFolder.add(config.radial, 'dotCount', 0).onFinishChange(deleteRadialDots);
@@ -509,27 +525,33 @@ window.onload = function () {
   radialFolder.add(config.radial, 'maxDistance', 0, 1);
   radialFolder.add(config.radial, 'tapering', 0, 1);
 
-  config.waves.forEach(function (wave, idx) {
+  config.waves.forEach(function (waveConfig, idx) {
     function deleteDots() {
       deleteWaveDots(idx);
     }
 
     var folder = gui.addFolder('Wave ' + (idx + 1));
 
-    if (wave.enabled) {
+    if (waveConfig.enabled) {
       folder.open();
     }
 
-    folder.add(wave, 'enabled').onFinishChange(function (enabled) { !enabled && deleteWaveDots(idx); });;
-    folder.add(wave, 'speed', -1, 1);
-    folder.add(wave, 'horizPos', 0, 1);
-    folder.add(wave, 'vertPos', 0, 1);
-    folder.add(wave, 'length', 0, 1).onFinishChange(deleteDots);
-    folder.add(wave, 'phase', 0, 1);
-    folder.add(wave, 'period', 0, 1);
-    folder.add(wave, 'amplitude', 0, 1);
-    folder.add(wave, 'amplitudeJitter', 0, 1);
-    folder.add(wave, 'spacingJitter', 0, 1).onFinishChange(deleteDots);
-    folder.add(wave, 'tapering', 0, 1);
+    folder.add(waveConfig, 'enabled').onFinishChange(function (enabled) {
+      if (enabled) {
+        waveDots[idx] = createWaveDots(waveConfig);
+      } else {
+        deleteWaveDots(idx);
+      }
+    });
+    folder.add(waveConfig, 'speed', -1, 1);
+    folder.add(waveConfig, 'horizPos', 0, 1);
+    folder.add(waveConfig, 'vertPos', 0, 1);
+    folder.add(waveConfig, 'length', 0, 1).onFinishChange(deleteDots);
+    folder.add(waveConfig, 'phase', 0, 1);
+    folder.add(waveConfig, 'period', 0, 1);
+    folder.add(waveConfig, 'amplitude', 0, 1);
+    folder.add(waveConfig, 'amplitudeJitter', 0, 1);
+    folder.add(waveConfig, 'spacingJitter', 0, 1).onFinishChange(deleteDots);
+    folder.add(waveConfig, 'tapering', 0, 1);
   });
 };
