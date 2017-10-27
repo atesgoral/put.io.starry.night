@@ -197,9 +197,7 @@ window.onload = function () {
 
   starryNight.resize();
 
-  window.onresize = function () {
-    starryNight.resize();
-  };
+  window.onresize = starryNight.resize;
 
   var ctx = canvas.getContext('2d');
 

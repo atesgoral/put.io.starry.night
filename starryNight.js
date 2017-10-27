@@ -1,10 +1,14 @@
-function StarryNight(canvas, config) {
-  this.canvas = canvas;
-  //this.state
-  this.resize();
-}
+(function () {
+  var global = this;
 
-StarryNight.prototype.resize = function () {
-  this.canvas.width = this.canvas.offsetWidth * 2;
-  this.canvas.height = this.canvas.offsetHeight * 2;
-};
+  function StarryNight(canvas, config) {
+    this.resize = function () {
+      canvas.width = canvas.offsetWidth * 2;
+      canvas.height = canvas.offsetHeight * 2;
+    };
+
+    this.resize();
+  }
+
+  global.StarryNight = StarryNight;
+})();
