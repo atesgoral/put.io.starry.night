@@ -1,12 +1,10 @@
 window.onload = function () {
   var stats = new Stats();
-  var thingsPanel = stats.addPanel(new Stats.Panel('T', '#ff8', '#221'));
+  var totalObjectsPanel = stats.addPanel(new Stats.Panel('T', '#ff8', '#221'));
   document.getElementById('stats').appendChild(stats.domElement);
 
-  var things = 0;
-
   setInterval(function () {
-    thingsPanel.update(things, 1000);
+    totalObjectsPanel.update(state.totalObjects, 1000);
   }, 100);
 
   function encodeConfig(config) {
@@ -141,6 +139,12 @@ window.onload = function () {
     return config.dots.minRadius + (1 + dot.r) * (config.dots.maxRadius - config.dots.minRadius) / 2;
   }
 
+  this.state = {
+    sparkles: [],
+    meteors: [],
+    totalObjects: 0
+  };
+
   function createWaveDots(waveConfig) {
     var x = 0;
 
@@ -164,7 +168,7 @@ window.onload = function () {
       x += radius * 2 + Math.random() * waveConfig.spacingJitter * waveConfig.spacingJitter * canvas.width;
     }
 
-    things += dots.length;
+    state.totalObjects += dots.length;
 
     return dots;
   }
@@ -192,7 +196,7 @@ window.onload = function () {
       });
     }
 
-    things += dots.length;
+    state.totalObjects += dots.length;
 
     return dots;
   }
@@ -208,8 +212,6 @@ window.onload = function () {
 
   var waveDots = createAllWaveDots();
   var radialDots = createRadialDots();
-  var sparkles = [];
-  var meteors = [];
 
   var ctx = canvas.getContext('2d');
 
@@ -325,13 +327,13 @@ window.onload = function () {
       var foldW = halfW * config.sparkles.thickness;
       var foldH = halfH * config.sparkles.thickness * aspectRatio;
 
-      for (var i = sparkles.length; i--;) {
-        var sparkle = sparkles[i];
+      for (var i = state.sparkles.length; i--;) {
+        var sparkle = state.sparkles[i];
         var age = t - sparkle.t;
 
         if (age > config.sparkles.age) {
-          sparkles.splice(i, 1);
-          things--;
+          state.sparkles.splice(i, 1);
+          state.totalObjects--;
           continue;
         }
 
@@ -359,13 +361,13 @@ window.onload = function () {
       ctx.translate(canvas.width / 2, canvas.height / 2);
       ctx.rotate(config.meteors.angle * Math.PI * 2);
 
-      for (var i = meteors.length; i--;) {
-        var meteor = meteors[i];
+      for (var i = state.meteors.length; i--;) {
+        var meteor = state.meteors[i];
         var age = t - meteor.t;
 
         if (age > config.meteors.age + tailDuration) {
-          meteors.splice(i, 1);
-          things--;
+          state.meteors.splice(i, 1);
+          state.totalObjects--;
           continue;
         }
 
@@ -381,25 +383,25 @@ window.onload = function () {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
 
       if (config.meteors.enabled && Math.random() < config.meteors.frequency) {
-        meteors.push({
+        state.meteors.push({
           p: Math.random(),
           t: t
         });
 
-        things++;
+        state.totalObjects++;
       }
 
       if (config.sparkles.enabled && Math.random() < config.sparkles.frequency) {
         var a = Math.random() * Math.PI * 2;
         var d = config.sparkles.minDistance + Math.random() * (config.sparkles.maxDistance - config.sparkles.minDistance);
 
-        sparkles.push({
+        state.sparkles.push({
           x: Math.cos(a) * d,
           y: Math.sin(a) * d,
           t: t
         });
 
-        things++;
+        state.totalObjects++;
       }
 
       stats.end();
@@ -410,7 +412,7 @@ window.onload = function () {
 
   function deleteWaveDots(idx) {
     if (waveDots[idx]) {
-      things -= waveDots[idx].length;
+      state.totalObjects -= waveDots[idx].length;
     }
     waveDots[idx] = [];
   }
@@ -425,19 +427,19 @@ window.onload = function () {
 
   function deleteRadialDots() {
     if (radialDots) {
-      things -= radialDots.length;
+      state.totalObjects -= radialDots.length;
     }
     radialDots = [];
   }
 
   function deleteSparkles() {
-    things -= sparkles.length;
-    sparkles = [];
+    state.totalObjects -= state.sparkles.length;
+    state.sparkles = [];
   }
 
   function deleteMeteors() {
-    things -= meteors.length;
-    meteors = [];
+    state.totalObjects -= state.meteors.length;
+    state.meteors = [];
   }
 
   var actions = {
