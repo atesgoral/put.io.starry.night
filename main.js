@@ -261,15 +261,12 @@ window.onload = function () {
           ctx.arc(x, y, dotR * scale, 0, Math.PI * 2);
           ctx.fill();
         }
-      } else {
-        deleteRadialDots();
       }
 
       for (var i = 0; i < config.waves.length; i++) {
         var wave = config.waves[i];
 
         if (!wave.enabled) {
-          deleteWaveDots(i);
           continue;
         }
 
@@ -371,8 +368,6 @@ window.onload = function () {
 
           things++;
         }
-      } else {
-        deleteSparkles();
       }
 
       if (config.meteors.enabled) {
@@ -411,8 +406,6 @@ window.onload = function () {
 
           things++;
         }
-      } else {
-        deleteMeteors();
       }
 
       stats.end();
@@ -483,7 +476,7 @@ window.onload = function () {
 
   var sparklesFolder = gui.addFolder('Sparkles');
   sparklesFolder.open();
-  sparklesFolder.add(config.sparkles, 'enabled');
+  sparklesFolder.add(config.sparkles, 'enabled').onFinishChange(function (enabled) { !enabled && deleteSparkles(); });
   sparklesFolder.add(config.sparkles, 'frequency', 0, 1);
   sparklesFolder.add(config.sparkles, 'age', 0);
   sparklesFolder.add(config.sparkles, 'width', 0);
@@ -494,7 +487,7 @@ window.onload = function () {
 
   var meteorsFolder = gui.addFolder('Meteors');
   meteorsFolder.open();
-  meteorsFolder.add(config.meteors, 'enabled');
+  meteorsFolder.add(config.meteors, 'enabled').onFinishChange(function (enabled) { !enabled && deleteMeteors(); });
   meteorsFolder.add(config.meteors, 'frequency', 0, 1);
   meteorsFolder.add(config.meteors, 'angle', 0, 1);
   meteorsFolder.add(config.meteors, 'age', 0);
@@ -508,7 +501,7 @@ window.onload = function () {
 
   var radialFolder = gui.addFolder('Radial');
   radialFolder.open();
-  radialFolder.add(config.radial, 'enabled');
+  radialFolder.add(config.radial, 'enabled').onFinishChange(function (enabled) { !enabled && deleteRadialDots(); });
   radialFolder.add(config.radial, 'perspective', 0);
   radialFolder.add(config.radial, 'speed', -1, 1);
   radialFolder.add(config.radial, 'dotCount', 0).onFinishChange(deleteRadialDots);
@@ -527,7 +520,7 @@ window.onload = function () {
       folder.open();
     }
 
-    folder.add(wave, 'enabled');
+    folder.add(wave, 'enabled').onFinishChange(function (enabled) { !enabled && deleteWaveDots(idx); });;
     folder.add(wave, 'speed', -1, 1);
     folder.add(wave, 'horizPos', 0, 1);
     folder.add(wave, 'vertPos', 0, 1);
