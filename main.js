@@ -191,7 +191,7 @@ window.onload = function () {
   }
 
   var SCALE = 2; // @todo not used yet
-  var canvas = document.getElementById('anim');
+  var canvas = document.getElementById('starry-night');
 
   function resizeCanvas() {
     canvas.width = canvas.offsetWidth * 2;
