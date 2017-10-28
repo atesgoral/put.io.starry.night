@@ -204,14 +204,14 @@ window.onload = function () {
   var SCALE = 2; // @todo not used yet
   var canvas = document.getElementById('starry-night');
 
-  var starryNight = new StarryNight(canvas, config);
+  var starryNight = new StarryNight(canvas, config, state);
 
   starryNight.resize();
 
   window.onresize = starryNight.resize;
 
-  var waveDots = createAllWaveDots();
-  var radialDots = createRadialDots();
+  state.waveDots = createAllWaveDots();
+  state.radialDots = createRadialDots();
 
   var ctx = canvas.getContext('2d');
 
@@ -237,8 +237,8 @@ window.onload = function () {
       ctx.fillStyle = '#fff';
       ctx.globalCompositeOperation = 'source-over';
 
-      for (var i = 0; i < radialDots.length; i++) {
-        var dot = radialDots[i];
+      for (var i = 0; i < state.radialDots.length; i++) {
+        var dot = state.radialDots[i];
         var a = dot.a * Math.PI * 2;
 
         var pos = ((t / 100 * Math.pow(config.radial.speed, 3) % 1) + 1) % 1;
@@ -274,7 +274,7 @@ window.onload = function () {
       for (var i = 0; i < config.waves.length; i++) {
         var waveConfig = config.waves[i];
 
-        var dots = waveDots[i];
+        var dots = state.waveDots[i];
 
         var maxX = waveConfig.length * canvas.width;
 
@@ -411,25 +411,25 @@ window.onload = function () {
   };
 
   function deleteWaveDots(idx) {
-    if (waveDots[idx]) {
-      state.totalObjects -= waveDots[idx].length;
+    if (state.waveDots[idx]) {
+      state.totalObjects -= state.waveDots[idx].length;
     }
-    waveDots[idx] = [];
+    state.waveDots[idx] = [];
   }
 
   function deleteAllWaveDots() {
-    if (waveDots) {
-      for (var i = 0; i < waveDots.length; i++) {
+    if (state.waveDots) {
+      for (var i = 0; i < state.waveDots.length; i++) {
         deleteWaveDots(i);
       }
     }
   }
 
   function deleteRadialDots() {
-    if (radialDots) {
-      state.totalObjects -= radialDots.length;
+    if (state.radialDots) {
+      state.totalObjects -= state.radialDots.length;
     }
-    radialDots = [];
+    state.radialDots = [];
   }
 
   function deleteSparkles() {
@@ -449,8 +449,8 @@ window.onload = function () {
       deleteSparkles();
       deleteMeteors();
       config = defaultConfig;
-      waveDots = createAllWaveDots();
-      radialDots = createRadialDots();
+      state.waveDots = createAllWaveDots();
+      state.radialDots = createRadialDots();
       document.location.hash = '';
     },
     share: function () {
@@ -504,18 +504,18 @@ window.onload = function () {
   // dotsFolder.open();
   dotsFolder.add(config.dots, 'minRadius', 0).onFinishChange(function () {
     deleteAllWaveDots();
-    waveDots = createAllWaveDots();
+    state.waveDots = createAllWaveDots();
   });
   dotsFolder.add(config.dots, 'maxRadius', 0).onFinishChange(function () {
     deleteAllWaveDots();
-    waveDots = createAllWaveDots();
+    state.waveDots = createAllWaveDots();
   });
 
   var radialFolder = gui.addFolder('Radial');
   radialFolder.open();
   radialFolder.add(config.radial, 'enabled').onFinishChange(function (enabled) {
     if (enabled) {
-      radialDots = createRadialDots();
+      state.radialDots = createRadialDots();
     } else {
       deleteRadialDots();
     }
@@ -540,7 +540,7 @@ window.onload = function () {
 
     folder.add(waveConfig, 'enabled').onFinishChange(function (enabled) {
       if (enabled) {
-        waveDots[idx] = createWaveDots(waveConfig);
+        state.waveDots[idx] = createWaveDots(waveConfig);
       } else {
         deleteWaveDots(idx);
       }
