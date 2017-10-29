@@ -255,13 +255,6 @@ window.onload = function () {
 
   var actions = {
     reset: function () {
-      deleteAllWaveDots();
-      deleteRadialDots();
-      deleteSparkles();
-      deleteMeteors();
-      config = defaultConfig;
-      state.waveDots = createAllWaveDots();
-      state.radialDots = createRadialDots();
       document.location.hash = '';
       document.location.reload();
     },
