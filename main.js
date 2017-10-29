@@ -42,81 +42,85 @@ window.onload = function () {
   }
 
   var defaultConfig = {
-    fps: {
-      throttle: true,
-      target: 30
+    "fps": {
+      "throttle": true,
+      "target": 30
     },
-    logo: {
-      scale: 0.5
+    "logo": {
+      "scale": 0.6
     },
-    sparkles: {
-      enabled: true,
-      frequency: 0.04,
-      age: 500,
-      width: 60,
-      height: 100,
-      thickness: 0.1,
-      minDistance: 0.2,
-      maxDistance: 0.95
+    "sparkles": {
+      "enabled": true,
+      "frequency": 0.05,
+      "age": 600,
+      "width": 60,
+      "height": 100,
+      "thickness": 0.2,
+      "minDistance": 0.5,
+      "maxDistance": 0.9
     },
-    meteors: {
-      enabled: true,
-      frequency: 0.02,
-      angle: 0.44,
-      age: 500,
-      length: 0.75,
-      thickness: 14
+    "meteors": {
+      "enabled": true,
+      "frequency": 0.005,
+      "angle": 0.44,
+      "age": 500,
+      "length": 0.75,
+      "thickness": 14
     },
-    dots: {
-      minRadius: 5,
-      maxRadius: 12
+    "dots": {
+      "minRadius": 3,
+      "maxRadius": 10
     },
-    radial: {
-      enabled: true,
-      perspective: 2,
-      speed: -0.1,
-      dotCount: 50,
-      minDistance: 0.5,
-      maxDistance: 0.95,
-      tapering: 0.2
+    "radial": {
+      "enabled": true,
+      "perspective": 1.6,
+      "speed": -0.13,
+      "dotCount": 100,
+      "minDistance": 0.58,
+      "maxDistance": 0.95,
+      "tapering": 0.2
     },
-    waves: [{
-      enabled: true,
-      speed: 0.2,
-      horizPos: 0,
-      vertPos: 0.3,
-      length: 0.5,
-      phase: 0.5,
-      period: 1,
-      amplitude: 0.15,
-      amplitudeJitter: 0.25,
-      spacingJitter: 0.1,
-      tapering: 0.2
-    }, {
-      enabled: true,
-      speed: -0.2,
-      horizPos: 0.5,
-      vertPos: 0.7,
-      length: 0.5,
-      phase: 0,
-      period: 1,
-      amplitude: 0.15,
-      amplitudeJitter: 0.25,
-      spacingJitter: 0.1,
-      tapering: 0.2
-    }, {
-      enabled: false,
-      speed: 0.27,
-      horizPos: 0.13,
-      vertPos: 0.43,
-      length: 0.39,
-      phase: 1,
-      period: 0.5,
-      amplitude: 0.34,
-      amplitudeJitter: 0.31,
-      spacingJitter: 0.12,
-      tapering: 0.2
-    }]
+    "waves": [
+      {
+        "enabled": true,
+        "speed": 0.29,
+        "horizPos": 0.1368,
+        "vertPos": 0.31,
+        "length": 0.56,
+        "phase": 1,
+        "period": 0.9,
+        "amplitude": 0.13,
+        "amplitudeJitter": 0.28,
+        "spacingJitter": 0.03,
+        "tapering": 0.2
+      },
+      {
+        "enabled": true,
+        "speed": -0.24,
+        "horizPos": 0.43460279165948645,
+        "vertPos": 0.8978114768223333,
+        "length": 0.3794589005686714,
+        "phase": 0.6992934688953989,
+        "period": 0.3353437876960193,
+        "amplitude": 0.26917111838704116,
+        "amplitudeJitter": 0.21,
+        "spacingJitter": 0.13,
+        "tapering": 0.2
+      },
+      {
+        "enabled": true,
+        "speed": 0.27,
+        "horizPos": 0.07,
+        "vertPos": 0.71,
+        "length": 0.5,
+        "phase": 0.6,
+        "period": 0.89,
+        "amplitude": 0.14,
+        "amplitudeJitter": 0.25,
+        "spacingJitter": 0.12,
+        "tapering": 0.2
+      }
+    ]
   };
 
   var config = defaultConfig;
@@ -134,6 +138,8 @@ window.onload = function () {
       }
     }
   }
+
+  console.log(JSON.stringify(config, null, 2));
 
   function r() {
     return Math.random() * 2 - 1;
@@ -248,7 +254,7 @@ window.onload = function () {
   }
 
   var actions = {
-    default: function () {
+    reset: function () {
       deleteAllWaveDots();
       deleteRadialDots();
       deleteSparkles();
@@ -257,6 +263,7 @@ window.onload = function () {
       state.waveDots = createAllWaveDots();
       state.radialDots = createRadialDots();
       document.location.hash = '';
+      document.location.reload();
     },
     share: function () {
       document.location.hash = encodeConfig(config);
@@ -265,7 +272,7 @@ window.onload = function () {
 
   var gui = new dat.GUI();
 
-  gui.add(actions, 'default').name('Default');
+  gui.add(actions, 'reset').name('Reset');
   gui.add(actions, 'share').name('Share');
 
   var fpsFolder = gui.addFolder('FPS');
