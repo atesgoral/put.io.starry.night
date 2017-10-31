@@ -2,13 +2,10 @@
   var global = this;
 
   function StarryNight(canvas, config, state, stats) {
-    function getRadius(dot) {
-      return config.dots.minRadius + (1 + dot.r) * (config.dots.maxRadius - config.dots.minRadius) / 2;
-    }
-
     this.resize = function () {
-      canvas.width = canvas.offsetWidth * 2;
-      canvas.height = canvas.offsetHeight * 2;
+      var pixelDensity = config.pixelDensity || 1;
+      canvas.width = canvas.offsetWidth * pixelDensity;
+      canvas.height = canvas.offsetHeight * pixelDensity;
     };
 
     this.resize();
@@ -53,7 +50,7 @@
 
             dotD = config.radial.minDistance + dotD * (config.radial.maxDistance - config.radial.minDistance);
 
-            var dotR = getRadius(dot);
+            var dotR = (config.radialDots.minRadius + (1 + dot.r) * (config.radialDots.maxRadius - config.radialDots.minRadius) / 2) * canvas.width;
 
             if (config.radial.perspective) {
               dotD = Math.pow(dotD, config.radial.perspective);
@@ -78,7 +75,7 @@
 
             var maxX = waveConfig.length * canvas.width;
 
-            var pos = ((t * Math.pow(waveConfig.speed, 3) % maxX) + maxX) % maxX; // @todo normalize to 1?
+            var pos = (((t * waveConfig.speed * canvas.width) % maxX) + maxX) % maxX;
 
             for (var j = 0; j < dots.length; j++) {
               var dot = dots[j];
@@ -101,14 +98,15 @@
                 : dotP2 < waveConfig.tapering
                   ? dotP2 / waveConfig.tapering
                   : 1;
+              var radius = (config.waveDots.minRadius + (1 + dot.r) * (config.waveDots.maxRadius - config.waveDots.minRadius) / 2) * canvas.width
 
               ctx.beginPath();
-              ctx.arc(x, y, getRadius(dot) * scale, 0, Math.PI * 2);
+              ctx.arc(x, y, radius * scale, 0, Math.PI * 2);
               ctx.fill();
             }
           }
 
-          var logoW = logo.width * config.logo.scale;
+          var logoW = canvas.width * config.logo.scale;
           var logoH = logoW / logoAspectRatio;
 
           ctx.globalCompositeOperation = 'xor';
@@ -121,8 +119,8 @@
 
           ctx.globalCompositeOperation = 'source-over';
 
-          var halfW = config.sparkles.width / 2;
-          var halfH = config.sparkles.height / 2;
+          var halfW = config.sparkles.width / 2 * canvas.width;
+          var halfH = config.sparkles.height / 2 * canvas.width;
           var aspectRatio = config.sparkles.width / config.sparkles.height;
           var foldW = halfW * config.sparkles.thickness;
           var foldH = halfH * config.sparkles.thickness * aspectRatio;
@@ -175,7 +173,7 @@
             var y = (meteor.p - 0.5) * canvas.height;
 
             ctx.beginPath();
-            ctx.arc(x, y, config.meteors.thickness / 2, Math.PI / 2, -Math.PI / 2, true);
+            ctx.arc(x, y, config.meteors.thickness / 2 * canvas.width, Math.PI / 2, -Math.PI / 2, true);
             ctx.lineTo(x - config.meteors.length * canvas.width, y);
             ctx.fill();
           }

@@ -1,8 +1,4 @@
 window.onload = function () {
-  function getRadius(dot) {
-    return config.dots.minRadius + (1 + dot.r) * (config.dots.maxRadius - config.dots.minRadius) / 2;
-  }
-
   var stats = new Stats();
   var totalObjectsPanel = stats.addPanel(new Stats.Panel('T', '#ff8', '#221'));
   document.getElementById('stats').appendChild(stats.domElement);
@@ -12,7 +8,7 @@ window.onload = function () {
   }, 100);
 
   function encodeConfig(config) {
-    return JSON.stringify(config)
+    return JSON.stringify(Object.assign({ v: 1 }, config))
       .replace(/"(\w+)":/g, '$1=')
       .replace(/,/g, '&')
       .replace(/{/g, '(')
@@ -42,19 +38,20 @@ window.onload = function () {
   }
 
   var defaultConfig = {
+    "pixelDensity": 2,
     "fps": {
       "throttle": true,
       "target": 30
     },
     "logo": {
-      "scale": 0.6
+      "scale": 0.6 / 1890 * 2251
     },
     "sparkles": {
       "enabled": true,
       "frequency": 0.05,
       "age": 600,
-      "width": 60,
-      "height": 100,
+      "width": 60 / 945 / 2,
+      "height": 100 / 945 / 2,
       "thickness": 0.2,
       "minDistance": 0.5,
       "maxDistance": 0.9
@@ -65,11 +62,15 @@ window.onload = function () {
       "angle": 0.44,
       "age": 500,
       "length": 0.75,
-      "thickness": 14
+      "thickness": 14 / 945
     },
-    "dots": {
-      "minRadius": 3,
-      "maxRadius": 10
+    "radialDots": {
+      "minRadius": 3 / 945 / 2,
+      "maxRadius": 10 / 945 / 2
+    },
+    "waveDots": {
+      "minRadius": 3 / 945 / 2,
+      "maxRadius": 10 / 945 / 2
     },
     "radial": {
       "enabled": true,
@@ -83,7 +84,7 @@ window.onload = function () {
     "waves": [
       {
         "enabled": true,
-        "speed": 0.29,
+        "speed": Math.pow(0.29, 3) / 945 / 2,
         "horizPos": 0.1368,
         "vertPos": 0.31,
         "length": 0.56,
@@ -96,7 +97,7 @@ window.onload = function () {
       },
       {
         "enabled": true,
-        "speed": -0.24,
+        "speed": Math.pow(-0.24, 3) / 945 / 2,
         "horizPos": 0.43460279165948645,
         "vertPos": 0.8978114768223333,
         "length": 0.3794589005686714,
@@ -109,7 +110,7 @@ window.onload = function () {
       },
       {
         "enabled": true,
-        "speed": 0.27,
+        "speed": Math.pow(0.27, 3) / 945 / 2,
         "horizPos": 0.07,
         "vertPos": 0.71,
         "length": 0.5,
@@ -137,6 +138,19 @@ window.onload = function () {
         document.location.hash = '';
       }
     }
+
+    if (config.v !== 2) {
+      Object.assign(config.radialDots, config.dots);
+      Object.assign(config.waveDots, config.dots);
+      config.sparkles.width /= 945 * 2;
+      config.sparkles.height /= 945 * 2;
+      config.meteors.thickness /= 945 * 2;
+      config.radialDots.minRadius /= 945 * 2;
+      config.radialDots.maxRadius /= 945 * 2;
+      config.waveDots.minRadius /= 945 * 2;
+      config.waveDots.maxRadius /= 945 * 2;
+      config.waves.speed /= 945 * 2;
+    }
   }
 
   console.log(JSON.stringify(config, null, 2));
@@ -158,6 +172,8 @@ window.onload = function () {
 
     var dots = [];
 
+    // @todo remove * canvas.width
+
     var maxX = waveConfig.length * canvas.width;
 
     while (x < maxX) {
@@ -166,7 +182,8 @@ window.onload = function () {
         r: r() // radius
       };
 
-      var radius = getRadius(dot);
+      var radius = (config.waveDots.minRadius + (1 + dot.r) * (config.waveDots.maxRadius - config.waveDots.minRadius) / 2) * canvas.width;
+
       var dotX = x + radius;
 
       dot.p = dotX / maxX; // phase
@@ -209,7 +226,6 @@ window.onload = function () {
     return dots;
   }
 
-  var SCALE = 2; // @todo not used yet
   var canvas = document.getElementById('starry-night');
 
   var starryNight = new StarryNight(canvas, config, state, stats);
@@ -268,6 +284,8 @@ window.onload = function () {
   gui.add(actions, 'reset').name('Reset');
   gui.add(actions, 'share').name('Share');
 
+  gui.add(config, 'pixelDensity', 0).onFinishChange(starryNight.resize);
+
   var fpsFolder = gui.addFolder('FPS');
   fpsFolder.open();
   fpsFolder.add(config.fps, 'throttle');
@@ -305,13 +323,18 @@ window.onload = function () {
   meteorsFolder.add(config.meteors, 'length', 0);
   meteorsFolder.add(config.meteors, 'thickness', 0);
 
-  var dotsFolder = gui.addFolder('Dots');
-  // dotsFolder.open();
-  dotsFolder.add(config.dots, 'minRadius', 0).onFinishChange(function () {
+  var radialDotsFolder = gui.addFolder('Radial Dots');
+  // radialDotsFolder.open();
+  radialDotsFolder.add(config.radialDots, 'minRadius', 0);
+  radialDotsFolder.add(config.radialDots, 'maxRadius', 0);
+
+  var waveDotsFolder = gui.addFolder('Wave Dots');
+  // waveDotsFolder.open();
+  waveDotsFolder.add(config.waveDots, 'minRadius', 0).onFinishChange(function () {
     deleteAllWaveDots();
     state.waveDots = createAllWaveDots();
   });
-  dotsFolder.add(config.dots, 'maxRadius', 0).onFinishChange(function () {
+  waveDotsFolder.add(config.waveDots, 'maxRadius', 0).onFinishChange(function () {
     deleteAllWaveDots();
     state.waveDots = createAllWaveDots();
   });
