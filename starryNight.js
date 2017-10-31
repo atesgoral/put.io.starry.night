@@ -3,7 +3,7 @@
 
   function StarryNight(canvas, config, state, stats) {
     this.resize = function () {
-      var pixelDensity = config.pixelDensity || 1;
+      var pixelDensity = config.pixelDensity || window.devicePixelRatio || 1;
       canvas.width = canvas.offsetWidth * pixelDensity;
       canvas.height = canvas.offsetHeight * pixelDensity;
     };
