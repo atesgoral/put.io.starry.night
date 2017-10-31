@@ -45,17 +45,17 @@ window.onload = function () {
       "target": 30
     },
     "logo": {
-      "scale": 0.6 / 1890 * 2251
+      "scale": 0.6681539682539683
     },
     "sparkles": {
       "enabled": true,
-      "frequency": 0.05,
-      "age": 600,
-      "width": 60 / 945 / 2,
-      "height": 100 / 945 / 2,
-      "thickness": 0.2,
-      "minDistance": 0.5,
-      "maxDistance": 0.9
+      "frequency": 0.04,
+      "age": 500,
+      "width": 0.031746031746031744,
+      "height": 0.05291005291005291,
+      "thickness": 0.1,
+      "minDistance": 0.2,
+      "maxDistance": 0.95
     },
     "meteors": {
       "enabled": true,
@@ -63,66 +63,67 @@ window.onload = function () {
       "angle": 0.44,
       "age": 500,
       "length": 0.75,
-      "thickness": 14 / 945 / 2
+      "thickness": 0.007407407407407408
     },
     "radialDots": {
-      "minRadius": 3 / 945 / 2,
-      "maxRadius": 10 / 945 / 2
+      "minRadius": 0.0026455026455026454,
+      "maxRadius": 0.005291005291005291
     },
     "waveDots": {
-      "minRadius": 3 / 945 / 2,
-      "maxRadius": 10 / 945 / 2
+      "minRadius": 0.0026455026455026454,
+      "maxRadius": 0.005291005291005291
     },
     "radial": {
       "enabled": true,
-      "perspective": 1.6,
-      "speed": -0.13,
+      "perspective": 1.5999999999999996,
+      "speed": -0.1749095295536791,
       "dotCount": 100,
-      "minDistance": 0.58,
+      "minDistance": 0.5890056867137687,
       "maxDistance": 0.95,
-      "tapering": 0.2
+      "tapering": 0.14785455798724798
     },
     "waves": [
       {
         "enabled": true,
-        "speed": Math.pow(0.29, 3) / 945 / 2,
-        "horizPos": 0.1368,
-        "vertPos": 0.31,
-        "length": 0.56,
-        "phase": 1,
-        "period": 0.9,
-        "amplitude": 0.13,
-        "amplitudeJitter": 0.28,
-        "spacingJitter": 0.03,
-        "tapering": 0.2
-      },
-      {
-        "enabled": true,
-        "speed": Math.pow(-0.24, 3) / 945 / 2,
-        "horizPos": 0.43460279165948645,
-        "vertPos": 0.8978114768223333,
-        "length": 0.3794589005686714,
-        "phase": 0.6992934688953989,
-        "period": 0.3353437876960193,
-        "amplitude": 0.26917111838704116,
-        "amplitudeJitter": 0.21,
-        "spacingJitter": 0.13,
-        "tapering": 0.2
-      },
-      {
-        "enabled": true,
-        "speed": Math.pow(0.27, 3) / 945 / 2,
-        "horizPos": 0.07,
-        "vertPos": 0.71,
-        "length": 0.5,
-        "phase": 0.6,
-        "period": 0.89,
-        "amplitude": 0.14,
+        "speed": 0.000004232804232804234,
+        "horizPos": 0.05962433224194382,
+        "vertPos": 0.3353437876960193,
+        "length": 0.5779769084956057,
+        "phase": 0.7985524728588661,
+        "period": 0.9308978114768224,
+        "amplitude": 0.15,
         "amplitudeJitter": 0.25,
+        "spacingJitter": 0.1,
+        "tapering": 0.2
+      },
+      {
+        "enabled": true,
+        "speed": -0.000004232804232804234,
+        "horizPos": 0.5118042391866277,
+        "vertPos": 0.6441495778045838,
+        "length": 0.5,
+        "phase": 0,
+        "period": 1,
+        "amplitude": 0.15,
+        "amplitudeJitter": 0.25,
+        "spacingJitter": 0.1,
+        "tapering": 0.2
+      },
+      {
+        "enabled": true,
+        "speed": 0.000010414285714285715,
+        "horizPos": 0.13,
+        "vertPos": 0.5448905738411166,
+        "length": 0.41254523522316044,
+        "phase": 0.158883336205411,
+        "period": 0.3463725659141823,
+        "amplitude": 0.23608478373255212,
+        "amplitudeJitter": 0.22505600551438912,
         "spacingJitter": 0.12,
         "tapering": 0.2
       }
-    ]
+    ],
+    "v": 2
   };
 
   var config = defaultConfig;
@@ -145,10 +146,10 @@ window.onload = function () {
     if (config.v !== 2) {
       console.log('normalizing');
 
-      config.logo.scale /= 1890 / 2251;
+      config.logo.scale /= 945 * 2 / 2251;
 
-      config.radialDots = config.dots;
-      config.waveDots = config.dots;
+      Object.assign(config.radialDots, config.dots);
+      Object.assign(config.waveDots, config.dots);
       delete config.dots;
 
       config.sparkles.width /= 945 * 2;
