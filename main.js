@@ -8,7 +8,7 @@ window.onload = function () {
   }, 100);
 
   function encodeConfig(config) {
-    return JSON.stringify(Object.assign({ v: 1 }, config))
+    return JSON.stringify(Object.assign({ v: 2 }, config))
       .replace(/"(\w+)":/g, '$1=')
       .replace(/,/g, '&')
       .replace(/{/g, '(')
@@ -30,6 +30,7 @@ window.onload = function () {
       var value = obj[p];
 
       if (value instanceof Object) {
+        target[p] = target[p] || {};
         mixin(target[p], value);
       } else {
         target[p] = value;
@@ -62,7 +63,7 @@ window.onload = function () {
       "angle": 0.44,
       "age": 500,
       "length": 0.75,
-      "thickness": 14 / 945
+      "thickness": 14 / 945 / 2
     },
     "radialDots": {
       "minRadius": 3 / 945 / 2,
@@ -142,8 +143,12 @@ window.onload = function () {
     }
 
     if (config.v !== 2) {
-      config.radialDots, config.dots;
-      config.waveDots, config.dots;
+      console.log('normalizing');
+
+      config.logo.scale /= 1890 / 2251;
+
+      config.radialDots = config.dots;
+      config.waveDots = config.dots;
       delete config.dots;
 
       config.sparkles.width /= 945 * 2;
@@ -153,7 +158,9 @@ window.onload = function () {
       config.radialDots.maxRadius /= 945 * 2;
       config.waveDots.minRadius /= 945 * 2;
       config.waveDots.maxRadius /= 945 * 2;
-      config.waves.speed /= 945 * 2;
+      config.waves.forEach(function (wave) {
+        wave.speed = Math.pow(wave.speed, 3) / 945 / 2;
+      });
     }
   }
 
