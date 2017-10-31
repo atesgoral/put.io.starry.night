@@ -130,10 +130,12 @@ window.onload = function () {
     try {
       mixin(config, decodeConfig(document.location.hash.slice(1)));
     } catch (err) {
+      console.error(err);
       try {
         // Try legacy format
         mixin(config, JSON.parse(decodeURIComponent(document.location.hash.slice(1))));
       } catch (err) {
+        console.error(err);
         alert('Invalid config in hash, ignoring and using default config');
         document.location.hash = '';
       }
