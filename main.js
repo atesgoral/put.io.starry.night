@@ -7,6 +7,19 @@ window.onload = function () {
     totalObjectsPanel.update(state.totalObjects, 1000);
   }, 100);
 
+  function mixin(target, obj) {
+    for (var p in obj) {
+      var value = obj[p];
+
+      if (value instanceof Object) {
+        target[p] = target[p] || {};
+        mixin(target[p], value);
+      } else {
+        target[p] = value;
+      }
+    }
+  }
+
   function encodeConfig(config) {
     return JSON.stringify(Object.assign({ v: 2 }, config))
       .replace(/"(\w+)":/g, '$1=')
@@ -25,16 +38,26 @@ window.onload = function () {
     );
   }
 
-  function mixin(target, obj) {
-    for (var p in obj) {
-      var value = obj[p];
+  function normalizeConfig(config) {
+    if (config.v !== 2) {
+      config.logo.scale /= 945 * 2 / 2251;
 
-      if (value instanceof Object) {
-        target[p] = target[p] || {};
-        mixin(target[p], value);
-      } else {
-        target[p] = value;
-      }
+      config.radialDots = Object.assign({}, config.dots);
+      config.waveDots = Object.assign({}, config.dots);
+      delete config.dots;
+
+      config.sparkles.frequency *= 100;
+      config.sparkles.width /= 945 * 2;
+      config.sparkles.height /= 945 * 2;
+      config.meteors.frequency *= 100;
+      config.meteors.thickness /= 945 * 2;
+      config.radialDots.minRadius /= 945 * 2;
+      config.radialDots.maxRadius /= 945 * 2;
+      config.waveDots.minRadius /= 945 * 2;
+      config.waveDots.maxRadius /= 945 * 2;
+      config.waves.forEach(function (wave) {
+        wave.speed = Math.pow(wave.speed, 3) / 945 / 2;
+      });
     }
   }
 
@@ -49,7 +72,7 @@ window.onload = function () {
     },
     "sparkles": {
       "enabled": true,
-      "frequency": 0.04,
+      "frequency": 0.04 * 100,
       "age": 500,
       "width": 0.031746031746031744,
       "height": 0.05291005291005291,
@@ -59,7 +82,7 @@ window.onload = function () {
     },
     "meteors": {
       "enabled": true,
-      "frequency": 0.005,
+      "frequency": 0.005 * 100,
       "angle": 0.44,
       "age": 500,
       "length": 0.75,
@@ -122,46 +145,24 @@ window.onload = function () {
         "spacingJitter": 0.12,
         "tapering": 0.2
       }
-    ],
-    "v": 2
+    ]
   };
 
   var config = defaultConfig;
 
   if (document.location.hash) {
     try {
-      mixin(config, decodeConfig(document.location.hash.slice(1)));
+      mixin(config, normalizeConfig(decodeConfig(document.location.hash.slice(1))));
     } catch (err) {
       console.error(err);
       try {
         // Try legacy format
-        mixin(config, JSON.parse(decodeURIComponent(document.location.hash.slice(1))));
+        mixin(config, normalizeConfig(JSON.parse(decodeURIComponent(document.location.hash.slice(1)))));
       } catch (err) {
         console.error(err);
         alert('Invalid config in hash, ignoring and using default config');
         document.location.hash = '';
       }
-    }
-
-    if (config.v !== 2) {
-      console.log('normalizing');
-
-      config.logo.scale /= 945 * 2 / 2251;
-
-      Object.assign(config.radialDots, config.dots);
-      Object.assign(config.waveDots, config.dots);
-      delete config.dots;
-
-      config.sparkles.width /= 945 * 2;
-      config.sparkles.height /= 945 * 2;
-      config.meteors.thickness /= 945 * 2;
-      config.radialDots.minRadius /= 945 * 2;
-      config.radialDots.maxRadius /= 945 * 2;
-      config.waveDots.minRadius /= 945 * 2;
-      config.waveDots.maxRadius /= 945 * 2;
-      config.waves.forEach(function (wave) {
-        wave.speed = Math.pow(wave.speed, 3) / 945 / 2;
-      });
     }
   }
 
@@ -314,7 +315,7 @@ window.onload = function () {
       deleteSparkles();
     }
   });
-  sparklesFolder.add(config.sparkles, 'frequency', 0, 1);
+  sparklesFolder.add(config.sparkles, 'frequency', 0, 100);
   sparklesFolder.add(config.sparkles, 'age', 0);
   sparklesFolder.add(config.sparkles, 'width', 0);
   sparklesFolder.add(config.sparkles, 'height', 0);
@@ -329,7 +330,7 @@ window.onload = function () {
       deleteMeteors();
     }
   });
-  meteorsFolder.add(config.meteors, 'frequency', 0, 1);
+  meteorsFolder.add(config.meteors, 'frequency', 0, 100);
   meteorsFolder.add(config.meteors, 'angle', 0, 1);
   meteorsFolder.add(config.meteors, 'age', 0);
   meteorsFolder.add(config.meteors, 'length', 0);

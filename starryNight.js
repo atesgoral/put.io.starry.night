@@ -180,7 +180,7 @@
 
           ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-          if (config.meteors.enabled && Math.random() < config.meteors.frequency) {
+          if (config.meteors.enabled && Math.random() < config.meteors.frequency / 100) {
             state.meteors.push({
               p: Math.random(),
               t: t
@@ -189,7 +189,7 @@
             state.totalObjects++;
           }
 
-          if (config.sparkles.enabled && Math.random() < config.sparkles.frequency) {
+          if (config.sparkles.enabled && Math.random() < config.sparkles.frequency / 100) {
             var a = Math.random() * Math.PI * 2;
             var d = config.sparkles.minDistance + Math.random() * (config.sparkles.maxDistance - config.sparkles.minDistance);
 
