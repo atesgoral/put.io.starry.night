@@ -142,8 +142,10 @@ window.onload = function () {
     }
 
     if (config.v !== 2) {
-      Object.assign(config.radialDots, config.dots);
-      Object.assign(config.waveDots, config.dots);
+      config.radialDots, config.dots;
+      config.waveDots, config.dots;
+      delete config.dots;
+
       config.sparkles.width /= 945 * 2;
       config.sparkles.height /= 945 * 2;
       config.meteors.thickness /= 945 * 2;
