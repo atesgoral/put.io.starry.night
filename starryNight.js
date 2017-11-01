@@ -119,8 +119,8 @@
 
           ctx.globalCompositeOperation = 'source-over';
 
-          var halfW = config.sparkles.width / 2 * canvas.width;
-          var halfH = config.sparkles.height / 2 * canvas.width;
+          var halfW = config.sparkles.width / 100 / 2 * canvas.width;
+          var halfH = config.sparkles.height / 100 / 2 * canvas.width;
           var aspectRatio = config.sparkles.width / config.sparkles.height;
           var foldW = halfW * config.sparkles.thickness;
           var foldH = halfH * config.sparkles.thickness * aspectRatio;

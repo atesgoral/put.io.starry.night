@@ -47,8 +47,8 @@ window.onload = function () {
       delete config.dots;
 
       config.sparkles.frequency *= 100;
-      config.sparkles.width /= 945 * 2;
-      config.sparkles.height /= 945 * 2;
+      config.sparkles.width = config.sparkles.width / 945 / 2 * 100;
+      config.sparkles.height = config.sparkles.height / 945 / 2 * 100;
       config.meteors.frequency *= 100;
       config.meteors.thickness /= 945 * 2;
       config.radialDots.minRadius /= 945 * 2;
@@ -74,8 +74,8 @@ window.onload = function () {
       "enabled": true,
       "frequency": 0.04 * 100,
       "age": 500,
-      "width": 0.031746031746031744,
-      "height": 0.05291005291005291,
+      "width": 0.031746031746031744 * 100,
+      "height": 0.05291005291005291 * 100,
       "thickness": 0.1,
       "minDistance": 0.2,
       "maxDistance": 0.95
