@@ -62,7 +62,7 @@ window.onload = function () {
   }
 
   var defaultConfig = {
-    "pixelDensity": 2,
+    "pixelDensity": 0,
     "fps": {
       "throttle": true,
       "target": 30
