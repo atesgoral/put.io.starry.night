@@ -173,7 +173,7 @@
             var y = (meteor.p - 0.5) * canvas.height;
 
             ctx.beginPath();
-            ctx.arc(x, y, config.meteors.thickness / 2 * canvas.width, Math.PI / 2, -Math.PI / 2, true);
+            ctx.arc(x, y, config.meteors.thickness / 100 / 2 * canvas.width, Math.PI / 2, -Math.PI / 2, true);
             ctx.lineTo(x - config.meteors.length * canvas.width, y);
             ctx.fill();
           }

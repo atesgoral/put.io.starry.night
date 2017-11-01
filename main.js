@@ -50,7 +50,7 @@ window.onload = function () {
       config.sparkles.width = config.sparkles.width / 945 / 2 * 100;
       config.sparkles.height = config.sparkles.height / 945 / 2 * 100;
       config.meteors.frequency *= 100;
-      config.meteors.thickness /= 945 * 2;
+      config.meteors.thickness = config.meteors.thickness / 945 / 2 * 100;
       config.radialDots.minRadius /= 945 * 2;
       config.radialDots.maxRadius /= 945 * 2;
       config.waveDots.minRadius /= 945 * 2;
@@ -86,7 +86,7 @@ window.onload = function () {
       "angle": 0.44,
       "age": 500,
       "length": 0.75,
-      "thickness": 0.007407407407407408
+      "thickness": 0.007407407407407408 * 100
     },
     "radialDots": {
       "minRadius": 0.0026455026455026454,
