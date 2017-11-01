@@ -363,7 +363,10 @@ window.onload = function () {
   });
   radialFolder.add(config.radial, 'perspective', 0);
   radialFolder.add(config.radial, 'speed', -1, 1);
-  radialFolder.add(config.radial, 'dotCount', 0).onFinishChange(deleteRadialDots);
+  radialFolder.add(config.radial, 'dotCount', 0).onFinishChange(function () {
+    deleteRadialDots();
+    state.radialDots = createRadialDots();
+  });
   radialFolder.add(config.radial, 'minDistance', 0, 1);
   radialFolder.add(config.radial, 'maxDistance', 0, 1);
   radialFolder.add(config.radial, 'tapering', 0, 1);
