@@ -377,10 +377,6 @@ window.onload = function () {
   radialFolder.add(config.radial, 'tapering', 0, 1);
 
   config.waves.forEach(function (waveConfig, idx) {
-    function deleteDots() {
-      deleteWaveDots(idx);
-    }
-
     var folder = gui.addFolder('Wave ' + (idx + 1));
 
     if (waveConfig.enabled) {
@@ -397,12 +393,22 @@ window.onload = function () {
     folder.add(waveConfig, 'speed');
     folder.add(waveConfig, 'horizPos', 0, 1);
     folder.add(waveConfig, 'vertPos', 0, 1);
-    folder.add(waveConfig, 'length', 0, 1).onFinishChange(deleteDots);
+    folder.add(waveConfig, 'length', 0, 1).onFinishChange(function () {
+      deleteWaveDots(idx);
+      state.waveDots[idx] = waveConfig.enabled
+        ? createWaveDots(waveConfig)
+        : [];
+    });
     folder.add(waveConfig, 'phase', 0, 1);
     folder.add(waveConfig, 'period', 0, 1);
     folder.add(waveConfig, 'amplitude', 0, 1);
     folder.add(waveConfig, 'amplitudeJitter', 0, 1);
-    folder.add(waveConfig, 'spacingJitter', 0, 1).onFinishChange(deleteDots);
+    folder.add(waveConfig, 'spacingJitter', 0, 1).onFinishChange(function () {
+      deleteWaveDots(idx);
+      state.waveDots[idx] = waveConfig.enabled
+        ? createWaveDots(waveConfig)
+        : [];
+    });
     folder.add(waveConfig, 'tapering', 0, 1);
   });
 };
