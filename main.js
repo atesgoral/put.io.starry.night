@@ -72,29 +72,29 @@ window.onload = function () {
     },
     "sparkles": {
       "enabled": true,
-      "frequency": 0.04 * 100,
+      "frequency": 4,
       "age": 500,
-      "width": 0.031746031746031744 * 100,
-      "height": 0.05291005291005291 * 100,
+      "width": 3.1746031746031744,
+      "height": 5.291005291005291,
       "thickness": 0.1,
       "minDistance": 0.2,
       "maxDistance": 0.95
     },
     "meteors": {
       "enabled": true,
-      "frequency": 0.005 * 100,
+      "frequency": 0.5,
       "angle": 0.44,
       "age": 500,
       "length": 0.75,
-      "thickness": 0.007407407407407408 * 100
+      "thickness": 0.7407407407407408
     },
     "radialDots": {
-      "minRadius": 0.0026455026455026454 * 100,
-      "maxRadius": 0.005291005291005291 * 100
+      "minRadius": 0.26455026455026454,
+      "maxRadius": 0.5291005291005291
     },
     "waveDots": {
-      "minRadius": 0.0026455026455026454 * 100,
-      "maxRadius": 0.005291005291005291 * 100
+      "minRadius": 0.26455026455026454,
+      "maxRadius": 0.5291005291005291
     },
     "radial": {
       "enabled": true,
@@ -108,7 +108,7 @@ window.onload = function () {
     "waves": [
       {
         "enabled": true,
-        "speed": 0.01617618335 * 100,
+        "speed": 1.6176183350000002,
         "horizPos": 0.05962433224194382,
         "vertPos": 0.3353437876960193,
         "length": 0.5779769084956057,
@@ -121,7 +121,7 @@ window.onload = function () {
       },
       {
         "enabled": true,
-        "speed": -0.01617618335 * 100,
+        "speed": -1.6176183350000002,
         "horizPos": 0.5118042391866277,
         "vertPos": 0.6441495778045838,
         "length": 0.5,
@@ -134,7 +134,7 @@ window.onload = function () {
       },
       {
         "enabled": true,
-        "speed": 0.02183784752 * 100,
+        "speed": 2.1837847519999998,
         "horizPos": 0.13,
         "vertPos": 0.5448905738411166,
         "length": 0.41254523522316044,
