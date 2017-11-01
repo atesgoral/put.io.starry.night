@@ -11,7 +11,10 @@ window.onload = function () {
     for (var p in obj) {
       var value = obj[p];
 
-      if (value instanceof Object) {
+      if (value instanceof Array) {
+        target[p] = target[p] || [];
+        mixin(target[p], value);
+      } else if (value instanceof Object) {
         target[p] = target[p] || {};
         mixin(target[p], value);
       } else {
@@ -59,6 +62,8 @@ window.onload = function () {
         wave.speed = Math.pow(Math.pow(wave.speed, 3) / 945 / 2, 1 / 3) * 100;
       });
     }
+
+    return config;
   }
 
   var defaultConfig = {
