@@ -56,7 +56,7 @@ window.onload = function () {
       config.waveDots.minRadius = config.waveDots.minRadius / 945 / 2 * 100;
       config.waveDots.maxRadius = config.waveDots.maxRadius / 945 / 2 * 100;
       config.waves.forEach(function (wave) {
-        wave.speed = Math.pow(wave.speed, 3) / 945 / 2;
+        wave.speed = Math.pow(Math.pow(wave.speed, 3) / 945 / 2, 1 / 3) * 100;
       });
     }
   }
@@ -108,7 +108,7 @@ window.onload = function () {
     "waves": [
       {
         "enabled": true,
-        "speed": 0.000004232804232804234,
+        "speed": 0.01617618335 * 100,
         "horizPos": 0.05962433224194382,
         "vertPos": 0.3353437876960193,
         "length": 0.5779769084956057,
@@ -121,7 +121,7 @@ window.onload = function () {
       },
       {
         "enabled": true,
-        "speed": -0.000004232804232804234,
+        "speed": -0.01617618335 * 100,
         "horizPos": 0.5118042391866277,
         "vertPos": 0.6441495778045838,
         "length": 0.5,
@@ -134,7 +134,7 @@ window.onload = function () {
       },
       {
         "enabled": true,
-        "speed": 0.000010414285714285715,
+        "speed": 0.02183784752 * 100,
         "horizPos": 0.13,
         "vertPos": 0.5448905738411166,
         "length": 0.41254523522316044,
@@ -386,7 +386,7 @@ window.onload = function () {
         deleteWaveDots(idx);
       }
     });
-    folder.add(waveConfig, 'speed', -1, 1);
+    folder.add(waveConfig, 'speed');
     folder.add(waveConfig, 'horizPos', 0, 1);
     folder.add(waveConfig, 'vertPos', 0, 1);
     folder.add(waveConfig, 'length', 0, 1).onFinishChange(deleteDots);

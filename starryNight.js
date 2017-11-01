@@ -75,7 +75,7 @@
 
             var maxX = waveConfig.length * canvas.width;
 
-            var pos = (((t * waveConfig.speed * canvas.width) % maxX) + maxX) % maxX;
+            var pos = (((t * Math.pow(waveConfig.speed / 100, 3) * canvas.width) % maxX) + maxX) % maxX;
 
             for (var j = 0; j < dots.length; j++) {
               var dot = dots[j];
