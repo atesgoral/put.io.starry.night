@@ -50,7 +50,7 @@
 
             dotD = config.radial.minDistance + dotD * (config.radial.maxDistance - config.radial.minDistance);
 
-            var dotR = (config.radialDots.minRadius + (1 + dot.r) * (config.radialDots.maxRadius - config.radialDots.minRadius) / 2) * canvas.width;
+            var dotR = (config.radialDots.minRadius + (1 + dot.r) * (config.radialDots.maxRadius - config.radialDots.minRadius) / 2) / 100 * canvas.width;
 
             if (config.radial.perspective) {
               dotD = Math.pow(dotD, config.radial.perspective);
@@ -98,7 +98,7 @@
                 : dotP2 < waveConfig.tapering
                   ? dotP2 / waveConfig.tapering
                   : 1;
-              var radius = (config.waveDots.minRadius + (1 + dot.r) * (config.waveDots.maxRadius - config.waveDots.minRadius) / 2) * canvas.width
+              var radius = (config.waveDots.minRadius + (1 + dot.r) * (config.waveDots.maxRadius - config.waveDots.minRadius) / 2) / 100 * canvas.width
 
               ctx.beginPath();
               ctx.arc(x, y, radius * scale, 0, Math.PI * 2);

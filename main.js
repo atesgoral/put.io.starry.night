@@ -51,10 +51,10 @@ window.onload = function () {
       config.sparkles.height = config.sparkles.height / 945 / 2 * 100;
       config.meteors.frequency *= 100;
       config.meteors.thickness = config.meteors.thickness / 945 / 2 * 100;
-      config.radialDots.minRadius /= 945 * 2;
-      config.radialDots.maxRadius /= 945 * 2;
-      config.waveDots.minRadius /= 945 * 2;
-      config.waveDots.maxRadius /= 945 * 2;
+      config.radialDots.minRadius = config.radialDots.minRadius / 945 / 2 * 100;
+      config.radialDots.maxRadius = config.radialDots.maxRadius / 945 / 2 * 100;
+      config.waveDots.minRadius = config.waveDots.minRadius / 945 / 2 * 100;
+      config.waveDots.maxRadius = config.waveDots.maxRadius / 945 / 2 * 100;
       config.waves.forEach(function (wave) {
         wave.speed = Math.pow(wave.speed, 3) / 945 / 2;
       });
@@ -89,12 +89,12 @@ window.onload = function () {
       "thickness": 0.007407407407407408 * 100
     },
     "radialDots": {
-      "minRadius": 0.0026455026455026454,
-      "maxRadius": 0.005291005291005291
+      "minRadius": 0.0026455026455026454 * 100,
+      "maxRadius": 0.005291005291005291 * 100
     },
     "waveDots": {
-      "minRadius": 0.0026455026455026454,
-      "maxRadius": 0.005291005291005291
+      "minRadius": 0.0026455026455026454 * 100,
+      "maxRadius": 0.005291005291005291 * 100
     },
     "radial": {
       "enabled": true,
@@ -195,7 +195,7 @@ window.onload = function () {
         r: r() // radius
       };
 
-      var radius = (config.waveDots.minRadius + (1 + dot.r) * (config.waveDots.maxRadius - config.waveDots.minRadius) / 2) * canvas.width;
+      var radius = (config.waveDots.minRadius + (1 + dot.r) * (config.waveDots.maxRadius - config.waveDots.minRadius) / 2) / 100 * canvas.width;
 
       var dotX = x + radius;
 
