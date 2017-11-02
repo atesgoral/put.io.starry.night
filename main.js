@@ -186,29 +186,23 @@ window.onload = function () {
   };
 
   function createWaveDots(waveConfig) {
-    var x = 0;
-
     var dots = [];
 
-    // @todo remove * canvas.width
+    var x = 0;
 
-    var maxX = waveConfig.length * canvas.width;
-
-    while (x < maxX) {
+    while (x < waveConfig.length) {
       var dot = {
         a: r(), // amplitute
         r: r() // radius
       };
 
-      var radius = (config.waveDots.minRadius + (1 + dot.r) * (config.waveDots.maxRadius - config.waveDots.minRadius) / 2) / 100 * canvas.width;
+      var radius = (config.waveDots.minRadius + (1 + dot.r) * (config.waveDots.maxRadius - config.waveDots.minRadius) / 2) / 100;
 
-      var dotX = x + radius;
-
-      dot.p = dotX / maxX; // phase
+      dot.p = (x + radius) / waveConfig.length; // phase
 
       dots.push(dot);
 
-      x += radius * 2 + Math.random() * waveConfig.spacingJitter * waveConfig.spacingJitter * canvas.width;
+      x += radius * 2 + Math.random() * waveConfig.spacingJitter * waveConfig.spacingJitter;
     }
 
     state.totalObjects += dots.length;
