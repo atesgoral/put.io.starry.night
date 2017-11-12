@@ -313,8 +313,7 @@
     };
   }
 
-  function StarryNight(canvas, config, logoUrl) {
-    var logo = new Image();
+  function StarryNight(canvas, logo, config) {
     var model = new StarryNightModel(config);
     var view = new StarryNightView(canvas, logo, config, model);
 
@@ -322,10 +321,7 @@
     this.view = view;
 
     this.initialize = function () {
-      logo.src = logoUrl;
-      logo.onload = function () {
-        view.initialize();
-      };
+      view.initialize();
 
       model.createRadialDots();
       model.createAllWaveDots();

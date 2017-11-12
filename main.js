@@ -1,13 +1,4 @@
 window.onload = function () {
-  var stats = new Stats();
-  var model = null;
-  var totalObjectsPanel = stats.addPanel(new Stats.Panel('T', '#ff8', '#221'));
-  document.getElementById('stats').appendChild(stats.domElement);
-
-  setInterval(function () {
-    model && totalObjectsPanel.update(model.totalObjects, 1000);
-  }, 100);
-
   function mixin(target, obj) {
     for (var p in obj) {
       var value = obj[p];
@@ -175,30 +166,38 @@ window.onload = function () {
   console.log(JSON.stringify(config, null, 2));
 
   var canvas = document.getElementById('starry-night');
+  var statsContainer = document.getElementById('stats');
 
-  var starryNight = new StarryNight(canvas, config, 'logo.png');
+  var logo = new Image();
+  logo.src = 'logo.png';
 
-  var model = starryNight.model;
+  logo.onload = function () {
+    var starryNight = new StarryNight(canvas, logo, config);
 
-  starryNight.view.onBeginRender = stats.begin;
-  starryNight.view.onEndRender = stats.end;
+    var model = starryNight.model;
 
-  starryNight.initialize();
+    starryNight.initialize();
 
-  window.onresize = starryNight.view.resize;
+    window.onresize = starryNight.view.resize;
 
-  var gui = new Gui(config, starryNight.model);
+    var gui = new Gui(config, starryNight.model);
 
-  gui.onResetConfig = function () {
-    document.location.hash = '';
-    document.location.reload();
-  };
+    gui.onResetConfig = function () {
+      document.location.hash = '';
+      document.location.reload();
+    };
 
-  gui.onShareConfig = function () {
-    document.location.hash = encodeConfig(config);
-  };
+    gui.onShareConfig = function () {
+      document.location.hash = encodeConfig(config);
+    };
 
-  gui.onPixelDensityChange = function () {
-    starryNight.view.resize();
+    gui.onPixelDensityChange = function () {
+      starryNight.view.resize();
+    };
+
+    var stats = new StarryNightStats(statsContainer, starryNight.model);
+
+    starryNight.view.onBeginRender = stats.begin;
+    starryNight.view.onEndRender = stats.end;
   };
 };
