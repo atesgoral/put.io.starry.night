@@ -1,8 +1,8 @@
 function StarryNightView(model, canvas, logo, config) {
   this.resize = function () {
-    var pixelDensity = config.pixelDensity || window.devicePixelRatio || 1;
-    canvas.width = canvas.offsetWidth * pixelDensity;
-    canvas.height = canvas.offsetHeight * pixelDensity;
+    var pixelRatio = config.pixelDensity || window.devicePixelRatio || 1;
+    canvas.width = canvas.offsetWidth * pixelRatio;
+    canvas.height = canvas.offsetHeight * pixelRatio;
   };
 
   this.repaint = function (t) {
