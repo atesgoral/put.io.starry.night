@@ -59,6 +59,36 @@ function StarryNightModel(config) {
     }
   };
 
+  this.createMeteor = function (t) {
+    this.meteors.push({
+      p: Math.random(),
+      t: t
+    });
+  };
+
+  this.createSparkle = function (t) {
+    var a = Math.random() * Math.PI * 2;
+    var d = config.sparkles.minDistance + Math.random() * (config.sparkles.maxDistance - config.sparkles.minDistance);
+
+    this.sparkles.push({
+      x: Math.cos(a) * d,
+      y: Math.sin(a) * d,
+      t: t
+    });
+  };
+
+  this.cullMeteors = function (t) {
+    this.meteors = this.meteors.filter(function (meteor) {
+      return t - meteor.t <= config.meteors.age * (1 + config.meteors.length);
+    });
+  };
+
+  this.cullSparkles = function (t) {
+    this.sparkles = this.sparkles.filter(function (sparkle) {
+      return t - sparkle.t <= config.sparkles.age;
+    });
+  };
+
   this.deleteRadialDots = function () {
     this.radialDots = [];
   };
