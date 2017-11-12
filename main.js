@@ -202,13 +202,6 @@ window.onload = function () {
     }
   }
 
-  function deleteRadialDots() {
-    if (state.radialDots) {
-      state.totalObjects -= state.radialDots.length;
-    }
-    state.radialDots = [];
-  }
-
   function deleteSparkles() {
     state.totalObjects -= state.sparkles.length;
     state.sparkles = [];
@@ -295,13 +288,13 @@ window.onload = function () {
     if (enabled) {
       state.createRadialDots();
     } else {
-      deleteRadialDots();
+      state.deleteRadialDots();
     }
   });
   radialFolder.add(config.radial, 'perspective', 0);
   radialFolder.add(config.radial, 'speed', -1, 1);
   radialFolder.add(config.radial, 'dotCount', 0).onFinishChange(function () {
-    deleteRadialDots();
+    state.deleteRadialDots();
     state.createRadialDots();
   });
   radialFolder.add(config.radial, 'minDistance', 0, 1);

@@ -64,6 +64,12 @@
             this.waveDots[idx] = [];
           }
         }
+      },
+      deleteRadialDots: function () {
+        if (this.radialDots) {
+          this.totalObjects -= this.radialDots.length;
+        }
+        this.radialDots = [];
       }
     };
 
