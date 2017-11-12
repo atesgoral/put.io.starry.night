@@ -172,15 +172,15 @@ window.onload = function () {
   logo.src = 'logo.png';
 
   logo.onload = function () {
-    var starryNight = new StarryNightController(canvas, logo, config);
+    var model = new StarryNightModel(config);
+    var view = new StarryNightView(canvas, logo, config, model);
+    var controller = new StarryNightController(model, view);
 
-    var model = starryNight.model;
+    controller.initialize();
 
-    starryNight.initialize();
+    window.onresize = view.resize;
 
-    window.onresize = starryNight.view.resize;
-
-    var gui = new StarryNightGui(config, starryNight.model);
+    var gui = new StarryNightGui(config, model);
 
     gui.onResetConfig = function () {
       document.location.hash = '';
@@ -192,12 +192,12 @@ window.onload = function () {
     };
 
     gui.onPixelDensityChange = function () {
-      starryNight.view.resize();
+      view.resize();
     };
 
-    var stats = new StarryNightStats(statsContainer, starryNight.model);
+    var stats = new StarryNightStats(statsContainer, model);
 
-    starryNight.view.onBeginRender = stats.begin;
-    starryNight.view.onEndRender = stats.end;
+    view.onBeginRender = stats.begin;
+    view.onEndRender = stats.end;
   };
 };
