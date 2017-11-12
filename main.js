@@ -176,8 +176,6 @@ window.onload = function () {
     var view = new StarryNightView(canvas, logo, config, model);
     var controller = new StarryNightController(model, view);
 
-    controller.initialize();
-
     window.onresize = view.resize;
 
     var gui = new StarryNightGui(config, model);

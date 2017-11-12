@@ -1,8 +1,6 @@
 function StarryNightController(model, view) {
-  this.initialize = function () {
-    view.initialize();
+  view.initialize();
 
-    model.createRadialDots();
-    model.createAllWaveDots();
-  };
+  model.createRadialDots();
+  model.createAllWaveDots();
 }
