@@ -38,7 +38,12 @@
           var dot = state.radialDots[i];
           var a = dot.a * Math.PI * 2;
 
-          var pos = ((t / 100 * Math.pow(config.radial.speed, 3) % 1) + 1) % 1;
+          var pos = t / 100 * Math.pow(config.radial.speed, 3) % 1;
+
+          if (pos < 0) {
+            pos += 1;
+          }
+
           var dotD = (pos + dot.d) % 1;
 
           var dotD2 = 1 - dotD;
@@ -75,7 +80,11 @@
 
           var maxX = waveConfig.length * canvas.width;
 
-          var pos = (((t * Math.pow(waveConfig.speed / 100, 3) * canvas.width) % maxX) + maxX) % maxX;
+          var pos = (t * Math.pow(waveConfig.speed / 100, 3) * canvas.width) % maxX;
+
+          if (pos < 0) {
+            pos += maxX;
+          }
 
           for (var j = 0; j < dots.length; j++) {
             var dot = dots[j];
