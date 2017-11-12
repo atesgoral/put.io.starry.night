@@ -215,25 +215,9 @@ window.onload = function () {
     return waveDots;
   }
 
-  function createRadialDots() {
-    var dots = [];
-
-    for (var i = 0; i < config.radial.dotCount; i++) {
-      dots.push({
-        a: Math.random(), // angle
-        d: Math.random(), // distance from center
-        r: r()
-      });
-    }
-
-    state.totalObjects += dots.length;
-
-    return dots;
-  }
-
   var canvas = document.getElementById('starry-night');
 
-  var starryNight = new StarryNight(canvas, config);
+  var starryNight = new StarryNight(canvas, config, 'logo.png');
 
   state = starryNight.state;
 
@@ -243,7 +227,6 @@ window.onload = function () {
   starryNight.initialize();
 
   state.waveDots = createAllWaveDots();
-  state.radialDots = createRadialDots();
 
   window.onresize = starryNight.resize;
 
@@ -353,7 +336,7 @@ window.onload = function () {
   radialFolder.open();
   radialFolder.add(config.radial, 'enabled').onFinishChange(function (enabled) {
     if (enabled) {
-      state.radialDots = createRadialDots();
+      state.createRadialDots();
     } else {
       deleteRadialDots();
     }
@@ -362,7 +345,7 @@ window.onload = function () {
   radialFolder.add(config.radial, 'speed', -1, 1);
   radialFolder.add(config.radial, 'dotCount', 0).onFinishChange(function () {
     deleteRadialDots();
-    state.radialDots = createRadialDots();
+    state.createRadialDots();
   });
   radialFolder.add(config.radial, 'minDistance', 0, 1);
   radialFolder.add(config.radial, 'maxDistance', 0, 1);

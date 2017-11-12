@@ -1,7 +1,11 @@
 (function () {
   var global = this;
 
-  function StarryNight(canvas, config) {
+  function r() {
+    return Math.random() * 2 - 1;
+  }
+
+  function StarryNight(canvas, config, logoUrl) {
     var logo = null;
     var logoAspectRatio = null;
     var ctx = null;
@@ -11,7 +15,22 @@
       radialDots: [],
       sparkles: [],
       meteors: [],
-      totalObjects: 0
+      totalObjects: 0,
+      createRadialDots: function () {
+        var dots = [];
+
+        for (var i = 0; i < config.radial.dotCount; i++) {
+          dots.push({
+            a: Math.random(), // angle
+            d: Math.random(), // distance from center
+            r: r()
+          });
+        }
+
+        this.totalObjects += dots.length;
+
+        this.radialDots = dots;
+      }
     };
 
     this.state = state;
@@ -24,7 +43,7 @@
 
     this.initialize = function () {
       logo = new Image();
-      logo.src = 'logo.png';
+      logo.src = logoUrl;
       logo.onload = function () {
         logoAspectRatio = logo.width / logo.height;
         requestAnimationFrame(repaint);
@@ -32,6 +51,8 @@
       ctx = canvas.getContext('2d');
 
       this.resize();
+
+      state.createRadialDots();
     };
 
     var listeners = this; // Treat it as a facade
