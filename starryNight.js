@@ -85,6 +85,16 @@
         }
       }
     };
+
+    this.deleteSparkles = function () {
+      this.totalObjects -= this.sparkles.length;
+      this.sparkles = [];
+    };
+
+    this.deleteMeteors = function () {
+      this.totalObjects -= this.meteors.length;
+      this.meteors = [];
+    };
   }
 
   function StarryNightView(canvas, logo, config, model) {

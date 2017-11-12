@@ -32,7 +32,7 @@ function Gui(config, model) {
   sparklesFolder.open();
   sparklesFolder.add(config.sparkles, 'enabled').onFinishChange(function (enabled) {
     if (!enabled) {
-      deleteSparkles();
+      model.deleteSparkles();
     }
   });
   sparklesFolder.add(config.sparkles, 'frequency', 0, 100);
@@ -47,7 +47,7 @@ function Gui(config, model) {
   meteorsFolder.open();
   meteorsFolder.add(config.meteors, 'enabled').onFinishChange(function (enabled) {
     if (!enabled) {
-      deleteMeteors();
+      model.deleteMeteors();
     }
   });
   meteorsFolder.add(config.meteors, 'frequency', 0, 100);

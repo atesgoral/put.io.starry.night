@@ -201,14 +201,4 @@ window.onload = function () {
   gui.onPixelDensityChange = function () {
     starryNight.view.resize();
   };
-
-  function deleteSparkles() {
-    model.totalObjects -= model.sparkles.length;
-    model.sparkles = [];
-  }
-
-  function deleteMeteors() {
-    model.totalObjects -= model.meteors.length;
-    model.meteors = [];
-  }
 };
