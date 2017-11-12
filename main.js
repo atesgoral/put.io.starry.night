@@ -172,7 +172,7 @@ window.onload = function () {
   logo.src = 'logo.png';
 
   logo.onload = function () {
-    var starryNight = new StarryNight(canvas, logo, config);
+    var starryNight = new StarryNightController(canvas, logo, config);
 
     var model = starryNight.model;
 
