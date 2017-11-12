@@ -5,7 +5,7 @@ function StarryNightStats(model, container) {
   container.appendChild(stats.domElement);
 
   setInterval(function () {
-    totalObjectsPanel.update(model.totalObjects, 1000);
+    totalObjectsPanel.update(model.getTotalObjects(), 1000);
   }, 100);
 
   this.begin = stats.begin;

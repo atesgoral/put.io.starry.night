@@ -119,8 +119,6 @@ function StarryNightView(model, canvas, logo, config) {
       var age = t - sparkle.t;
 
       if (age > config.sparkles.age) {
-        model.sparkles.splice(i, 1);
-        model.totalObjects--;
         continue;
       }
 
@@ -153,8 +151,6 @@ function StarryNightView(model, canvas, logo, config) {
       var age = t - meteor.t;
 
       if (age > config.meteors.age + tailDuration) {
-        model.meteors.splice(i, 1);
-        model.totalObjects--;
         continue;
       }
 
@@ -169,15 +165,33 @@ function StarryNightView(model, canvas, logo, config) {
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
 
+    // @todo move rest to controller:
+
+    // @todo model.cullMeteors()
+    if (config.meteors.enabled) {
+      var tailDuration = canvas.width / config.meteors.length;
+
+      model.meteors = model.meteors.filter(function (meteor) {
+        return t - meteor.t <= config.meteors.age + tailDuration;
+      });
+    }
+
+    // @todo model.createMeteor()
     if (config.meteors.enabled && Math.random() < config.meteors.frequency / 100) {
       model.meteors.push({
         p: Math.random(),
         t: t
       });
-
-      model.totalObjects++;
     }
 
+    // @todo model.cullSparkles()
+    if (config.sparkles.enabled) {
+      model.sparkles = model.sparkles.filter(function (sparkle) {
+        return t - sparkle.t <= config.sparkles.age;
+      });
+    }
+
+    // @todo model.createSparkle()
     if (config.sparkles.enabled && Math.random() < config.sparkles.frequency / 100) {
       var a = Math.random() * Math.PI * 2;
       var d = config.sparkles.minDistance + Math.random() * (config.sparkles.maxDistance - config.sparkles.minDistance);
@@ -187,8 +201,6 @@ function StarryNightView(model, canvas, logo, config) {
         y: Math.sin(a) * d,
         t: t
       });
-
-      model.totalObjects++;
     }
   };
 }

@@ -3,7 +3,13 @@ function StarryNightModel(config) {
   this.radialDots = [];
   this.sparkles = [];
   this.meteors = [];
-  this.totalObjects = 0;
+
+  this.getTotalObjects = function () {
+    return this.waveDots.reduce(function (total, dots) { return total + dots.length; }, 0)
+      + this.radialDots.length
+      + this.sparkles.length
+      + this.meteors.length;
+  };
 
   this.createRadialDots = function () {
     var dots = [];
@@ -15,8 +21,6 @@ function StarryNightModel(config) {
         r: Math.random() * 2 - 1
       });
     }
-
-    this.totalObjects += dots.length;
 
     this.radialDots = dots;
   };
@@ -42,8 +46,6 @@ function StarryNightModel(config) {
       x += radius * 2 + Math.random() * waveConfig.spacingJitter * waveConfig.spacingJitter;
     }
 
-    this.totalObjects += dots.length;
-
     this.waveDots[idx] = dots;
   };
 
@@ -58,34 +60,24 @@ function StarryNightModel(config) {
   };
 
   this.deleteRadialDots = function () {
-    if (this.radialDots) {
-      this.totalObjects -= this.radialDots.length;
-    }
     this.radialDots = [];
   };
 
   this.deleteWaveDots = function (idx) {
-    if (this.waveDots[idx]) {
-      this.totalObjects -= this.waveDots[idx].length;
-    }
     this.waveDots[idx] = [];
   };
 
   this.deleteAllWaveDots = function () {
-    if (this.waveDots) {
-      for (var i = 0; i < this.waveDots.length; i++) {
-        this.deleteWaveDots(i);
-      }
+    for (var i = 0; i < this.waveDots.length; i++) {
+      this.deleteWaveDots(i);
     }
   };
 
   this.deleteSparkles = function () {
-    this.totalObjects -= this.sparkles.length;
     this.sparkles = [];
   };
 
   this.deleteMeteors = function () {
-    this.totalObjects -= this.meteors.length;
     this.meteors = [];
   };
 }
