@@ -1,11 +1,11 @@
 window.onload = function () {
   var stats = new Stats();
-  var state = null;
+  var model = null;
   var totalObjectsPanel = stats.addPanel(new Stats.Panel('T', '#ff8', '#221'));
   document.getElementById('stats').appendChild(stats.domElement);
 
   setInterval(function () {
-    state && totalObjectsPanel.update(state.totalObjects, 1000);
+    model && totalObjectsPanel.update(model.totalObjects, 1000);
   }, 100);
 
   function mixin(target, obj) {
@@ -178,7 +178,7 @@ window.onload = function () {
 
   var starryNight = new StarryNight(canvas, config, 'logo.png');
 
-  state = starryNight.state;
+  model = starryNight.model;
 
   starryNight.onBeginRender = stats.begin;
   starryNight.onEndRender = stats.end;
@@ -188,13 +188,13 @@ window.onload = function () {
   window.onresize = starryNight.resize;
 
   function deleteSparkles() {
-    state.totalObjects -= state.sparkles.length;
-    state.sparkles = [];
+    model.totalObjects -= model.sparkles.length;
+    model.sparkles = [];
   }
 
   function deleteMeteors() {
-    state.totalObjects -= state.meteors.length;
-    state.meteors = [];
+    model.totalObjects -= model.meteors.length;
+    model.meteors = [];
   }
 
   var actions = {
@@ -259,28 +259,28 @@ window.onload = function () {
   var waveDotsFolder = gui.addFolder('Wave Dots');
   // waveDotsFolder.open();
   waveDotsFolder.add(config.waveDots, 'minRadius', 0).onFinishChange(function () {
-    state.deleteAllWaveDots();
-    state.createAllWaveDots();
+    model.deleteAllWaveDots();
+    model.createAllWaveDots();
   });
   waveDotsFolder.add(config.waveDots, 'maxRadius', 0).onFinishChange(function () {
-    state.deleteAllWaveDots();
-    state.createAllWaveDots();
+    model.deleteAllWaveDots();
+    model.createAllWaveDots();
   });
 
   var radialFolder = gui.addFolder('Radial');
   radialFolder.open();
   radialFolder.add(config.radial, 'enabled').onFinishChange(function (enabled) {
     if (enabled) {
-      state.createRadialDots();
+      model.createRadialDots();
     } else {
-      state.deleteRadialDots();
+      model.deleteRadialDots();
     }
   });
   radialFolder.add(config.radial, 'perspective', 0);
   radialFolder.add(config.radial, 'speed', -1, 1);
   radialFolder.add(config.radial, 'dotCount', 0).onFinishChange(function () {
-    state.deleteRadialDots();
-    state.createRadialDots();
+    model.deleteRadialDots();
+    model.createRadialDots();
   });
   radialFolder.add(config.radial, 'minDistance', 0, 1);
   radialFolder.add(config.radial, 'maxDistance', 0, 1);
@@ -295,9 +295,9 @@ window.onload = function () {
 
     folder.add(waveConfig, 'enabled').onFinishChange(function (enabled) {
       if (enabled) {
-        state.createWaveDots(idx);
+        model.createWaveDots(idx);
       } else {
-        state.deleteWaveDots(idx);
+        model.deleteWaveDots(idx);
       }
     });
     folder.add(waveConfig, 'speed');
@@ -305,8 +305,8 @@ window.onload = function () {
     folder.add(waveConfig, 'vertPos', 0, 1);
     folder.add(waveConfig, 'length', 0, 1).onFinishChange(function () {
       if (waveConfig.enabled) {
-        state.deleteWaveDots(idx);
-        state.createWaveDots(idx);
+        model.deleteWaveDots(idx);
+        model.createWaveDots(idx);
       }
     });
     folder.add(waveConfig, 'phase', 0, 1);
@@ -315,8 +315,8 @@ window.onload = function () {
     folder.add(waveConfig, 'amplitudeJitter', 0, 1);
     folder.add(waveConfig, 'spacingJitter', 0, 1).onFinishChange(function () {
       if (waveConfig.enabled) {
-        state.deleteWaveDots(idx);
-        state.createWaveDots(idx);
+        model.deleteWaveDots(idx);
+        model.createWaveDots(idx);
       }
     });
     folder.add(waveConfig, 'tapering', 0, 1);

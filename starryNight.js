@@ -10,7 +10,7 @@
     var logoAspectRatio = null;
     var ctx = null;
 
-    var state = {
+    var model = {
       waveDots: [],
       radialDots: [],
       sparkles: [],
@@ -86,7 +86,7 @@
       }
     };
 
-    this.state = state;
+    this.model = model;
 
     this.resize = function () {
       var pixelDensity = config.pixelDensity || window.devicePixelRatio || 1;
@@ -105,8 +105,8 @@
 
       this.resize();
 
-      state.createRadialDots();
-      state.createAllWaveDots();
+      model.createRadialDots();
+      model.createAllWaveDots();
     };
 
     var listeners = this; // Treat it as a facade
@@ -127,8 +127,8 @@
       ctx.fillStyle = '#fff';
       ctx.globalCompositeOperation = 'source-over';
 
-      for (var i = 0; i < state.radialDots.length; i++) {
-        var dot = state.radialDots[i];
+      for (var i = 0; i < model.radialDots.length; i++) {
+        var dot = model.radialDots[i];
         var a = dot.a * Math.PI * 2;
 
         var pos = t / 100 * Math.pow(config.radial.speed, 3) % 1;
@@ -169,7 +169,7 @@
       for (var i = 0; i < config.waves.length; i++) {
         var waveConfig = config.waves[i];
 
-        var dots = state.waveDots[i] || [];
+        var dots = model.waveDots[i] || [];
 
         var maxX = waveConfig.length * canvas.width;
 
@@ -227,13 +227,13 @@
       var foldW = halfW * config.sparkles.thickness;
       var foldH = halfH * config.sparkles.thickness * aspectRatio;
 
-      for (var i = state.sparkles.length; i--;) {
-        var sparkle = state.sparkles[i];
+      for (var i = model.sparkles.length; i--;) {
+        var sparkle = model.sparkles[i];
         var age = t - sparkle.t;
 
         if (age > config.sparkles.age) {
-          state.sparkles.splice(i, 1);
-          state.totalObjects--;
+          model.sparkles.splice(i, 1);
+          model.totalObjects--;
           continue;
         }
 
@@ -261,13 +261,13 @@
       ctx.translate(canvas.width / 2, canvas.height / 2);
       ctx.rotate(config.meteors.angle * Math.PI * 2);
 
-      for (var i = state.meteors.length; i--;) {
-        var meteor = state.meteors[i];
+      for (var i = model.meteors.length; i--;) {
+        var meteor = model.meteors[i];
         var age = t - meteor.t;
 
         if (age > config.meteors.age + tailDuration) {
-          state.meteors.splice(i, 1);
-          state.totalObjects--;
+          model.meteors.splice(i, 1);
+          model.totalObjects--;
           continue;
         }
 
@@ -283,25 +283,25 @@
       ctx.setTransform(1, 0, 0, 1, 0, 0);
 
       if (config.meteors.enabled && Math.random() < config.meteors.frequency / 100) {
-        state.meteors.push({
+        model.meteors.push({
           p: Math.random(),
           t: t
         });
 
-        state.totalObjects++;
+        model.totalObjects++;
       }
 
       if (config.sparkles.enabled && Math.random() < config.sparkles.frequency / 100) {
         var a = Math.random() * Math.PI * 2;
         var d = config.sparkles.minDistance + Math.random() * (config.sparkles.maxDistance - config.sparkles.minDistance);
 
-        state.sparkles.push({
+        model.sparkles.push({
           x: Math.cos(a) * d,
           y: Math.sin(a) * d,
           t: t
         });
 
-        state.totalObjects++;
+        model.totalObjects++;
       }
 
       listeners.onEndRender && listeners.onEndRender();
