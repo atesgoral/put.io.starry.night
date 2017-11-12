@@ -141,7 +141,6 @@ function StarryNightView(model, canvas, logo, config) {
     }
 
     var r = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height) / 2;
-    var tailDuration = canvas.width / config.meteors.length;
 
     ctx.translate(canvas.width / 2, canvas.height / 2);
     ctx.rotate(config.meteors.angle * Math.PI * 2);
@@ -150,7 +149,7 @@ function StarryNightView(model, canvas, logo, config) {
       var meteor = model.meteors[i];
       var age = t - meteor.t;
 
-      if (age > config.meteors.age + tailDuration) {
+      if (age > config.meteors.age * (1 + config.meteors.length)) {
         continue;
       }
 
@@ -159,48 +158,10 @@ function StarryNightView(model, canvas, logo, config) {
 
       ctx.beginPath();
       ctx.arc(x, y, config.meteors.thickness / 100 / 2 * canvas.width, Math.PI / 2, -Math.PI / 2, true);
-      ctx.lineTo(x - config.meteors.length * canvas.width, y);
+      ctx.lineTo(x - config.meteors.length * 2 * r, y);
       ctx.fill();
     }
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-    // @todo move rest to controller:
-
-    // @todo model.cullMeteors()
-    if (config.meteors.enabled) {
-      var tailDuration = canvas.width / config.meteors.length;
-
-      model.meteors = model.meteors.filter(function (meteor) {
-        return t - meteor.t <= config.meteors.age + tailDuration;
-      });
-    }
-
-    // @todo model.createMeteor()
-    if (config.meteors.enabled && Math.random() < config.meteors.frequency / 100) {
-      model.meteors.push({
-        p: Math.random(),
-        t: t
-      });
-    }
-
-    // @todo model.cullSparkles()
-    if (config.sparkles.enabled) {
-      model.sparkles = model.sparkles.filter(function (sparkle) {
-        return t - sparkle.t <= config.sparkles.age;
-      });
-    }
-
-    // @todo model.createSparkle()
-    if (config.sparkles.enabled && Math.random() < config.sparkles.frequency / 100) {
-      var a = Math.random() * Math.PI * 2;
-      var d = config.sparkles.minDistance + Math.random() * (config.sparkles.maxDistance - config.sparkles.minDistance);
-
-      model.sparkles.push({
-        x: Math.cos(a) * d,
-        y: Math.sin(a) * d,
-        t: t
-      });
-    }
   };
 }
