@@ -187,21 +187,6 @@ window.onload = function () {
 
   window.onresize = starryNight.resize;
 
-  function deleteWaveDots(idx) {
-    if (state.waveDots[idx]) {
-      state.totalObjects -= state.waveDots[idx].length;
-    }
-    state.waveDots[idx] = [];
-  }
-
-  function deleteAllWaveDots() {
-    if (state.waveDots) {
-      for (var i = 0; i < state.waveDots.length; i++) {
-        deleteWaveDots(i);
-      }
-    }
-  }
-
   function deleteSparkles() {
     state.totalObjects -= state.sparkles.length;
     state.sparkles = [];
@@ -274,11 +259,11 @@ window.onload = function () {
   var waveDotsFolder = gui.addFolder('Wave Dots');
   // waveDotsFolder.open();
   waveDotsFolder.add(config.waveDots, 'minRadius', 0).onFinishChange(function () {
-    deleteAllWaveDots();
+    state.deleteAllWaveDots();
     state.createAllWaveDots();
   });
   waveDotsFolder.add(config.waveDots, 'maxRadius', 0).onFinishChange(function () {
-    deleteAllWaveDots();
+    state.deleteAllWaveDots();
     state.createAllWaveDots();
   });
 
@@ -312,7 +297,7 @@ window.onload = function () {
       if (enabled) {
         state.createWaveDots(idx);
       } else {
-        deleteWaveDots(idx);
+        state.deleteWaveDots(idx);
       }
     });
     folder.add(waveConfig, 'speed');
@@ -320,7 +305,7 @@ window.onload = function () {
     folder.add(waveConfig, 'vertPos', 0, 1);
     folder.add(waveConfig, 'length', 0, 1).onFinishChange(function () {
       if (waveConfig.enabled) {
-        deleteWaveDots(idx);
+        state.deleteWaveDots(idx);
         state.createWaveDots(idx);
       }
     });
@@ -330,7 +315,7 @@ window.onload = function () {
     folder.add(waveConfig, 'amplitudeJitter', 0, 1);
     folder.add(waveConfig, 'spacingJitter', 0, 1).onFinishChange(function () {
       if (waveConfig.enabled) {
-        deleteWaveDots(idx);
+        state.deleteWaveDots(idx);
         state.createWaveDots(idx);
       }
     });

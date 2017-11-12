@@ -70,6 +70,19 @@
           this.totalObjects -= this.radialDots.length;
         }
         this.radialDots = [];
+      },
+      deleteWaveDots: function (idx) {
+        if (this.waveDots[idx]) {
+          this.totalObjects -= this.waveDots[idx].length;
+        }
+        this.waveDots[idx] = [];
+      },
+      deleteAllWaveDots: function () {
+        if (this.waveDots) {
+          for (var i = 0; i < this.waveDots.length; i++) {
+            this.deleteWaveDots(i);
+          }
+        }
       }
     };
 
