@@ -1,10 +1,6 @@
 (function () {
   var global = this;
 
-  function r() {
-    return Math.random() * 2 - 1;
-  }
-
   function StarryNightModel(config) {
     this.waveDots = [];
     this.radialDots = [];
@@ -19,7 +15,7 @@
         dots.push({
           a: Math.random(), // angle
           d: Math.random(), // distance from center
-          r: r()
+          r: Math.random() * 2 - 1
         });
       }
 
@@ -36,8 +32,8 @@
 
       while (x < waveConfig.length) {
         var dot = {
-          a: r(), // amplitute
-          r: r() // radius
+          a: Math.random() * 2 - 1, // amplitute
+          r: Math.random() * 2 - 1 // radius
         };
 
         var radius = (config.waveDots.minRadius + (1 + dot.r) * (config.waveDots.maxRadius - config.waveDots.minRadius) / 2) / 100;
