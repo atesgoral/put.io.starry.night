@@ -178,14 +178,14 @@ window.onload = function () {
 
   var starryNight = new StarryNight(canvas, config, 'logo.png');
 
-  model = starryNight.model;
+  var model = starryNight.model;
 
-  starryNight.onBeginRender = stats.begin;
-  starryNight.onEndRender = stats.end;
+  starryNight.view.onBeginRender = stats.begin;
+  starryNight.view.onEndRender = stats.end;
 
   starryNight.initialize();
 
-  window.onresize = starryNight.resize;
+  window.onresize = starryNight.view.resize;
 
   function deleteSparkles() {
     model.totalObjects -= model.sparkles.length;
