@@ -177,7 +177,7 @@ window.onload = function () {
     return Math.random() * 2 - 1;
   }
 
-  this.state = {
+  var state = {
     waveDots: [],
     radialDots: [],
     sparkles: [],
