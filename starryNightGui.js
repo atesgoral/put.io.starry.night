@@ -1,4 +1,4 @@
-function Gui(config, model) {
+function StarryNightGui(config, model) {
   var listeners = this;
 
   var actions = {

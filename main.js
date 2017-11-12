@@ -180,7 +180,7 @@ window.onload = function () {
 
     window.onresize = starryNight.view.resize;
 
-    var gui = new Gui(config, starryNight.model);
+    var gui = new StarryNightGui(config, starryNight.model);
 
     gui.onResetConfig = function () {
       document.location.hash = '';
