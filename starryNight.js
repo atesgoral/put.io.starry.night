@@ -1,10 +1,20 @@
 (function () {
   var global = this;
 
-  function StarryNight(canvas, config, state) {
+  function StarryNight(canvas, config) {
     var logo = null;
     var logoAspectRatio = null;
     var ctx = null;
+
+    var state = {
+      waveDots: [],
+      radialDots: [],
+      sparkles: [],
+      meteors: [],
+      totalObjects: 0
+    };
+
+    this.state = state;
 
     this.resize = function () {
       var pixelDensity = config.pixelDensity || window.devicePixelRatio || 1;

@@ -1,10 +1,11 @@
 window.onload = function () {
   var stats = new Stats();
+  var state = null;
   var totalObjectsPanel = stats.addPanel(new Stats.Panel('T', '#ff8', '#221'));
   document.getElementById('stats').appendChild(stats.domElement);
 
   setInterval(function () {
-    totalObjectsPanel.update(state.totalObjects, 1000);
+    state && totalObjectsPanel.update(state.totalObjects, 1000);
   }, 100);
 
   function mixin(target, obj) {
@@ -177,14 +178,6 @@ window.onload = function () {
     return Math.random() * 2 - 1;
   }
 
-  var state = {
-    waveDots: [],
-    radialDots: [],
-    sparkles: [],
-    meteors: [],
-    totalObjects: 0
-  };
-
   function createWaveDots(waveConfig) {
     var dots = [];
 
@@ -240,7 +233,9 @@ window.onload = function () {
 
   var canvas = document.getElementById('starry-night');
 
-  var starryNight = new StarryNight(canvas, config, state);
+  var starryNight = new StarryNight(canvas, config);
+
+  state = starryNight.state;
 
   starryNight.onBeginRender = stats.begin;
   starryNight.onEndRender = stats.end;
