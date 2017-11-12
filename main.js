@@ -173,12 +173,12 @@ window.onload = function () {
 
   logo.onload = function () {
     var model = new StarryNightModel(config);
-    var view = new StarryNightView(canvas, logo, config, model);
-    var controller = new StarryNightController(model, view);
+    var view = new StarryNightView(model, canvas, logo, config);
+    var controller = new StarryNightController(model, view, config);
 
     window.onresize = view.resize;
 
-    var gui = new StarryNightGui(config, model);
+    var gui = new StarryNightGui(model, config);
 
     gui.onResetConfig = function () {
       document.location.hash = '';
@@ -193,9 +193,9 @@ window.onload = function () {
       view.resize();
     };
 
-    var stats = new StarryNightStats(statsContainer, model);
+    var stats = new StarryNightStats(model, statsContainer);
 
-    view.onBeginRender = stats.begin;
-    view.onEndRender = stats.end;
+    controller.onBeginRender = stats.begin;
+    controller.onEndRender = stats.end;
   };
 };

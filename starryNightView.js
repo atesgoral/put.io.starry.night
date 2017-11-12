@@ -1,19 +1,12 @@
-function StarryNightView(canvas, logo, config, model) {
-  var logoAspectRatio = null;
-  var ctx = null;
+function StarryNightView(model, canvas, logo, config) {
+  this.resize = function () {
+    var pixelDensity = config.pixelDensity || window.devicePixelRatio || 1;
+    canvas.width = canvas.offsetWidth * pixelDensity;
+    canvas.height = canvas.offsetHeight * pixelDensity;
+  };
 
-  var listeners = this; // Treat it as a facade
-
-  function repaint(t) {
-    listeners.onBeginRender && listeners.onBeginRender();
-
-    if (config.fps.throttle) {
-      setTimeout(function () {
-        requestAnimationFrame(repaint);
-      }, 1000 / config.fps.target);
-    } else {
-      requestAnimationFrame(repaint);
-    }
+  this.repaint = function (t) {
+    var ctx = canvas.getContext('2d');
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -101,6 +94,7 @@ function StarryNightView(canvas, logo, config, model) {
       }
     }
 
+    var logoAspectRatio = logo.width / logo.height;
     var logoW = canvas.width * config.logo.scale;
     var logoH = logoW / logoAspectRatio;
 
@@ -196,20 +190,5 @@ function StarryNightView(canvas, logo, config, model) {
 
       model.totalObjects++;
     }
-
-    listeners.onEndRender && listeners.onEndRender();
-  }
-
-  this.resize = function () {
-    var pixelDensity = config.pixelDensity || window.devicePixelRatio || 1;
-    canvas.width = canvas.offsetWidth * pixelDensity;
-    canvas.height = canvas.offsetHeight * pixelDensity;
-  };
-
-  this.initialize = function () {
-    logoAspectRatio = logo.width / logo.height;
-    ctx = canvas.getContext('2d');
-    this.resize();
-    requestAnimationFrame(repaint);
   };
 }
