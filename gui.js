@@ -1,4 +1,4 @@
-function Gui(config, model, view) {
+function Gui(config, model) {
   var listeners = this;
 
   var actions = {
@@ -15,7 +15,9 @@ function Gui(config, model, view) {
   gui.add(actions, 'reset').name('Reset');
   gui.add(actions, 'share').name('Share');
 
-  gui.add(config, 'pixelDensity', 0).onFinishChange(view.resize);
+  gui.add(config, 'pixelDensity', 0).onFinishChange(function () {
+    listeners.onPixelDensityChange && listeners.onPixelDensityChange();
+  });
 
   var fpsFolder = gui.addFolder('FPS');
   fpsFolder.open();

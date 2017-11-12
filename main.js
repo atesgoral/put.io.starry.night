@@ -187,7 +187,7 @@ window.onload = function () {
 
   window.onresize = starryNight.view.resize;
 
-  var gui = new Gui(config, starryNight.model, starryNight.view);
+  var gui = new Gui(config, starryNight.model);
 
   gui.onResetConfig = function () {
     document.location.hash = '';
@@ -196,6 +196,10 @@ window.onload = function () {
 
   gui.onShareConfig = function () {
     document.location.hash = encodeConfig(config);
+  };
+
+  gui.onPixelDensityChange = function () {
+    starryNight.view.resize();
   };
 
   function deleteSparkles() {
