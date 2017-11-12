@@ -240,9 +240,12 @@ window.onload = function () {
 
   var canvas = document.getElementById('starry-night');
 
-  var starryNight = new StarryNight(canvas, config, state, stats);
+  var starryNight = new StarryNight(canvas, config, state);
 
-  starryNight.resize();
+  starryNight.onBeginRender = stats.begin;
+  starryNight.onEndRender = stats.end;
+
+  starryNight.initialize();
 
   state.waveDots = createAllWaveDots();
   state.radialDots = createRadialDots();

@@ -1,28 +1,33 @@
 (function () {
   var global = this;
 
-  function StarryNight(canvas, config, state, stats) {
+  function StarryNight(canvas, config, state) {
+    var logo = null;
+    var logoAspectRatio = null;
+    var ctx = null;
+
     this.resize = function () {
       var pixelDensity = config.pixelDensity || window.devicePixelRatio || 1;
       canvas.width = canvas.offsetWidth * pixelDensity;
       canvas.height = canvas.offsetHeight * pixelDensity;
     };
 
-    this.resize();
+    this.initialize = function () {
+      logo = new Image();
+      logo.src = 'logo.png';
+      logo.onload = function () {
+        logoAspectRatio = logo.width / logo.height;
+        requestAnimationFrame(repaint);
+      };
+      ctx = canvas.getContext('2d');
 
-    var ctx = canvas.getContext('2d');
-
-    var logo = new Image();
-    var logoAspectRatio = null;
-    logo.src = 'logo.png';
-
-    logo.onload = function () {
-      logoAspectRatio = logo.width / logo.height;
-      requestAnimationFrame(repaint);
+      this.resize();
     };
 
+    var listeners = this; // Treat it as a facade
+
     function repaint(t) {
-      stats.begin();
+      listeners.onBeginRender && listeners.onBeginRender();
 
       if (config.fps.throttle) {
         setTimeout(function () {
@@ -214,9 +219,8 @@
         state.totalObjects++;
       }
 
-      stats.end();
+      listeners.onEndRender && listeners.onEndRender();
     }
-
   }
 
   global.StarryNight = StarryNight;
