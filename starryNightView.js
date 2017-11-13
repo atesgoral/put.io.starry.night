@@ -7,11 +7,12 @@ function StarryNightView(model, canvas, logo, config) {
 
   this.repaint = function (t) {
     var ctx = canvas.getContext('2d');
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var normH = canvas.height / canvas.width;
 
     ctx.fillStyle = '#fff';
     ctx.globalCompositeOperation = 'source-over';
+    ctx.scale(canvas.width, canvas.width);
+    ctx.clearRect(0, 0, 1, normH);
 
     for (var i = 0; i < model.radialDots.length; i++) {
       var dot = model.radialDots[i];
@@ -34,7 +35,7 @@ function StarryNightView(model, canvas, logo, config) {
 
       dotD = config.radial.minDistance + dotD * (config.radial.maxDistance - config.radial.minDistance);
 
-      var dotR = (config.radialDots.minRadius + (1 + dot.r) * (config.radialDots.maxRadius - config.radialDots.minRadius) / 2) / 100 * canvas.width;
+      var dotR = (config.radialDots.minRadius + (1 + dot.r) * (config.radialDots.maxRadius - config.radialDots.minRadius) / 2) / 100;
 
       if (config.radial.perspective) {
         dotD = Math.pow(dotD, config.radial.perspective);
@@ -44,8 +45,8 @@ function StarryNightView(model, canvas, logo, config) {
       var dx = Math.cos(a) * dotD;
       var dy = Math.sin(a) * dotD;
 
-      var x = (dx + 1) * canvas.width / 2;
-      var y = (dy + 1) * canvas.height / 2;
+      var x = (dx + 1) / 2;
+      var y = (dy + 1) * normH / 2;
 
       ctx.beginPath();
       ctx.arc(x, y, dotR * scale, 0, Math.PI * 2);
@@ -57,9 +58,9 @@ function StarryNightView(model, canvas, logo, config) {
 
       var dots = model.waveDots[i] || [];
 
-      var maxX = waveConfig.length * canvas.width;
+      var maxX = waveConfig.length;
 
-      var pos = (t * Math.pow(waveConfig.speed / 100, 3) * canvas.width) % maxX;
+      var pos = (t * Math.pow(waveConfig.speed / 100, 3)) % maxX;
 
       if (pos < 0) {
         pos += maxX;
@@ -70,7 +71,7 @@ function StarryNightView(model, canvas, logo, config) {
 
         var dotX = (pos + dot.p * maxX) % maxX;
         var dotP = dotX / maxX;
-        var x = waveConfig.horizPos * canvas.width + dotX;
+        var x = waveConfig.horizPos + dotX;
         var y = (
           (
             Math.sin(
@@ -78,7 +79,7 @@ function StarryNightView(model, canvas, logo, config) {
             )
           ) * waveConfig.amplitude + dot.a * waveConfig.amplitudeJitter * waveConfig.amplitudeJitter
           + waveConfig.vertPos
-        ) * canvas.height;
+        ) * normH;
 
         var dotP2 = 1 - dotP;
         var scale = dotP < waveConfig.tapering
@@ -86,7 +87,7 @@ function StarryNightView(model, canvas, logo, config) {
           : dotP2 < waveConfig.tapering
             ? dotP2 / waveConfig.tapering
             : 1;
-        var radius = (config.waveDots.minRadius + (1 + dot.r) * (config.waveDots.maxRadius - config.waveDots.minRadius) / 2) / 100 * canvas.width
+        var radius = (config.waveDots.minRadius + (1 + dot.r) * (config.waveDots.maxRadius - config.waveDots.minRadius) / 2) / 100
 
         ctx.beginPath();
         ctx.arc(x, y, radius * scale, 0, Math.PI * 2);
@@ -95,7 +96,7 @@ function StarryNightView(model, canvas, logo, config) {
     }
 
     var logoAspectRatio = logo.width / logo.height;
-    var logoW = canvas.width * config.logo.scale;
+    var logoW = config.logo.scale;
     var logoH = logoW / logoAspectRatio;
 
     ctx.globalCompositeOperation = 'xor';
@@ -103,13 +104,13 @@ function StarryNightView(model, canvas, logo, config) {
     ctx.drawImage(
       logo,
       0, 0, logo.width, logo.height,
-      (canvas.width - logoW) / 2, (canvas.height - logoH) / 2, logoW, logoH
+      (1 - logoW) / 2, (normH - logoH) / 2, logoW, logoH
     );
 
     ctx.globalCompositeOperation = 'source-over';
 
-    var halfW = config.sparkles.width / 100 / 2 * canvas.width;
-    var halfH = config.sparkles.height / 100 / 2 * canvas.width;
+    var halfW = config.sparkles.width / 100 / 2;
+    var halfH = config.sparkles.height / 100 / 2;
     var aspectRatio = config.sparkles.width / config.sparkles.height;
     var foldW = halfW * config.sparkles.thickness;
     var foldH = halfH * config.sparkles.thickness * aspectRatio;
@@ -125,8 +126,8 @@ function StarryNightView(model, canvas, logo, config) {
       var scale = age / config.sparkles.age;
       scale = 1 - Math.abs(0.5 - scale) * 2;
 
-      var x = (sparkle.x + 1) * canvas.width / 2;
-      var y = (sparkle.y + 1) * canvas.height / 2;
+      var x = (sparkle.x + 1) / 2;
+      var y = (sparkle.y + 1) * normH / 2;
 
       ctx.beginPath();
       ctx.moveTo(x, y - halfH * scale);
@@ -140,9 +141,9 @@ function StarryNightView(model, canvas, logo, config) {
       ctx.fill();
     }
 
-    var r = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height) / 2;
+    var r = Math.sqrt(1 + normH * normH) / 2;
 
-    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.translate(1 / 2, normH / 2);
     ctx.rotate(config.meteors.angle * Math.PI * 2);
 
     for (var i = model.meteors.length; i--;) {
@@ -154,10 +155,10 @@ function StarryNightView(model, canvas, logo, config) {
       }
 
       var x = (age / config.meteors.age - 0.5) * r * 2;
-      var y = (meteor.p - 0.5) * canvas.height;
+      var y = (meteor.p - 0.5) * normH;
 
       ctx.beginPath();
-      ctx.arc(x, y, config.meteors.thickness / 100 / 2 * canvas.width, Math.PI / 2, -Math.PI / 2, true);
+      ctx.arc(x, y, config.meteors.thickness / 100 / 2, Math.PI / 2, -Math.PI / 2, true);
       ctx.lineTo(x - config.meteors.length * 2 * r, y);
       ctx.fill();
     }
