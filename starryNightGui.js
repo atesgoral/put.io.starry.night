@@ -15,8 +15,8 @@ function StarryNightGui(model, config) {
   gui.add(actions, 'reset').name('Reset');
   gui.add(actions, 'share').name('Share');
 
-  gui.add(config, 'pixelDensity', 0).onFinishChange(function () {
-    listeners.onPixelDensityChange && listeners.onPixelDensityChange();
+  gui.add(config, 'pixelRatio', 0).onFinishChange(function () {
+    listeners.onPixelRatioChange && listeners.onPixelRatioChange();
   });
 
   var fpsFolder = gui.addFolder('FPS');

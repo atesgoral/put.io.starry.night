@@ -1,6 +1,6 @@
 function StarryNightConfig() {
   return {
-    "pixelDensity": 0,
+    "pixelRatio": 0,
     "fps": {
       "throttle": true,
       "target": 30

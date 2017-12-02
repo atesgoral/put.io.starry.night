@@ -102,7 +102,7 @@ window.onload = function () {
       document.location.hash = encodeConfig(config);
     };
 
-    gui.onPixelDensityChange = function () {
+    gui.onPixelRatioChange = function () {
       view.resize();
     };
 
